@@ -15,7 +15,7 @@ Advanced spatial analysis and data science for urban planning and public policy.
 - **Final Project:** Capstone modeling challenge
 
 ## About Me
-[Students will customize this section]
+I'm Yiming Cao, 
 
 ## Contact
 - Email: [cao4@upenn.edu]
