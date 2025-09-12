@@ -4,28 +4,28 @@
     "href": "weekly-notes/week-01-notes.html",
     "title": "Week 1 Notes - Course Introduction",
     "section": "",
-    "text": "Repository(repo): folders containing project files\n[Technical skills covered]"
+    "text": "Repository(repo): folders containing project files Commit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#key-concepts-learned",
     "href": "weekly-notes/week-01-notes.html#key-concepts-learned",
     "title": "Week 1 Notes - Course Introduction",
     "section": "",
-    "text": "Repository(repo): folders containing project files\n[Technical skills covered]"
+    "text": "Repository(repo): folders containing project files Commit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#coding-techniques",
     "href": "weekly-notes/week-01-notes.html#coding-techniques",
     "title": "Week 1 Notes - Course Introduction",
     "section": "Coding Techniques",
-    "text": "Coding Techniques\n\n[New R functions or approaches]\n[Quarto features learned]"
+    "text": "Coding Techniques\n\nMain Header Section Header\nSubsection Header\n[Quarto features learned]"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#questions-challenges",
     "href": "weekly-notes/week-01-notes.html#questions-challenges",
     "title": "Week 1 Notes - Course Introduction",
     "section": "Questions & Challenges",
-    "text": "Questions & Challenges\n\n[What I didn’t fully understand]\n[Areas needing more practice]"
+    "text": "Questions & Challenges\n\nNot really understand what Tibbles are\n[Areas needing more practice]"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#connections-to-policy",
