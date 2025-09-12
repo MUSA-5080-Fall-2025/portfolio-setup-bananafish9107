@@ -4,9 +4,9 @@ date: "2025-09-08"
 ---
 
 ## Key Concepts Learned
-- Repository(repo): folders containing project files
+- Repository(repo): folders containing project files 
 - Commit: snapshot work at a point
-  Push: send changes to the Github cloud
+  Push: send changes to the Github cloud 
   Pull: get the latest changes from the Github cloud
 - Quarto: Publishing system into professional documents
   
@@ -18,11 +18,13 @@ date: "2025-09-08"
 
 ## Questions & Challenges
 - Not really understand what Tibbles are
-- [Areas needing more practice]
 
 ## Connections to Policy
 - [How this week's content applies to real policy work]
 
 ## Reflection
 - [What was most interesting]
-- [How I'll apply this knowledge]
+- Always clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.
+- Use R Projects to organize your working directory.
+- You can render each quarto document separately, but before you push your website, use the terminal in R studio and type 'quarto render' to generate the whole website.
+
