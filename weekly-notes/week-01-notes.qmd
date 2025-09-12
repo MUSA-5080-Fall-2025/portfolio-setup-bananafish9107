@@ -11,13 +11,11 @@ date: "2025-09-08"
 - Quarto: Publishing system into professional documents
   
 ## Coding Techniques
-- # Main Header
-  ## Section Header  
-  ### Subsection Header
+- 
 - [Quarto features learned]
 
 ## Questions & Challenges
-- [What I didn't fully understand]
+- Not really understand what Tibbles are
 - [Areas needing more practice]
 
 ## Connections to Policy
