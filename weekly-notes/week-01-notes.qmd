@@ -4,11 +4,16 @@ date: "2025-09-08"
 ---
 
 ## Key Concepts Learned
-- [List main concepts from lecture]
-- [Technical skills covered]
-
+- Repository(repo): folders containing project files
+  Commit: snapshot work at a point
+  Push: send changes to the Github cloud
+  Pull: get the latest changes from the Github cloud
+- Quarto: Publishing system into professional documents
+  
 ## Coding Techniques
-- [New R functions or approaches]
+- # Main Header
+  ## Section Header  
+  ### Subsection Header
 - [Quarto features learned]
 
 ## Questions & Challenges

@@ -19,7 +19,6 @@ website:
           - href: weekly-notes/week-02-notes.qmd
             text: "Week2"
       - text: "Labs"
-      
 format:
   html:
     theme: cosmo
