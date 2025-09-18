@@ -18,10 +18,8 @@ website:
             text: "Week2"
       - text: "Labs"
         menu:
-          - href: labs/lab0/script/lab0_template.qmd
-            text: "Lab0"
-          - href: labs/lab1.qmd
-            text: "Lab1"
+          - href: labs/lab_0/lab0_template.qmd
+            text: "Lab 0: Dplyr Basics"
 format:
   html:
     theme: cosmo
