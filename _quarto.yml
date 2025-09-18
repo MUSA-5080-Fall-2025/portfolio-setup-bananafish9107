@@ -19,6 +19,11 @@ website:
           - href: weekly-notes/week-02-notes.qmd
             text: "Week2"
       - text: "Labs"
+        menu:
+          - href: labs/lab0.qmd
+            text: "Lab0"
+          - href: labs/lab1.qmd
+            text: "Lab1"
 format:
   html:
     theme: cosmo
