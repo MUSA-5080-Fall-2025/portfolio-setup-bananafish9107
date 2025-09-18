@@ -20,7 +20,7 @@ website:
             text: "Week2"
       - text: "Labs"
         menu:
-          - href: labs/lab0.qmd
+          - href: labs/lab0/script/lab0_template.qmd
             text: "Lab0"
           - href: labs/lab1.qmd
             text: "Lab1"
