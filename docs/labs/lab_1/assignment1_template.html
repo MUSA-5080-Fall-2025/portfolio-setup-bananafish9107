@@ -436,7 +436,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MOE Percentage"</span>,</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Reliability Category"</span></span>
 <span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span> <span class="co"># 保留一位小数（对收入数字则会四舍五入）</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span> </span>
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -513,7 +513,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pick_county_by_conf <span class="ot">&lt;-</span> <span class="cf">function</span>(df, conf) {</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  df_conf <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(reliability <span class="sc">==</span> conf)</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(df_conf) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">tibble</span>())     <span class="co"># 返回空 tibble，调用方会做 fallback</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">tibble</span>())     </span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  med_moe <span class="ot">&lt;-</span> <span class="fu">median</span>(df_conf<span class="sc">$</span>moe_pct_income, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  picked <span class="ot">&lt;-</span> df_conf <span class="sc">%&gt;%</span></span>
@@ -537,7 +537,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  mc_pick <span class="ot">&lt;-</span> county_reliability <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(moe_pct_income)) <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">1</span>)</span>
 <span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(lc_pick) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 选择 MOE% 最大的作为 Low 的代表（如果本来就没有 Low 类）</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  lc_pick <span class="ot">&lt;-</span> county_reliability <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(moe_pct_income)) <span class="sc">%&gt;%</span> <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">1</span>)</span>
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Show: county name, median income, MOE percentage, reliability category</span></span>
@@ -647,7 +647,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
 <span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    GEOID,</span>
 <span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">tract_name =</span> NAME,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 从 NAME 中提取县名（如果格式不完全一致，county 列会尽可能提取）</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">county =</span> <span class="fu">str_extract</span>(NAME, <span class="fu">paste</span>(counties_to_get, <span class="at">collapse =</span> <span class="st">"|"</span>)),</span>
 <span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_pop =</span> total_popE,</span>
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_pop_moe =</span> total_popM,</span>
@@ -977,33 +977,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">white_moe_pct =</span> <span class="fu">if_else</span>(white <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">100</span> <span class="sc">*</span> white_moe <span class="sc">/</span> white, <span class="cn">NA_real_</span>),</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">black_moe_pct =</span> <span class="fu">if_else</span>(black <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">100</span> <span class="sc">*</span> black_moe <span class="sc">/</span> black, <span class="cn">NA_real_</span>),</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hispanic_moe_pct =</span> <span class="fu">if_else</span>(hispanic <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">100</span> <span class="sc">*</span> hispanic_moe <span class="sc">/</span> hispanic, <span class="cn">NA_real_</span>),</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># flag: 如果任意族裔 MOE% &gt; 15% 则标记</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">high_moe_flag =</span> <span class="fu">if_else</span>(</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      white_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">|</span> black_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">|</span> hispanic_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span>,</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>, <span class="cn">FALSE</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a flag for tracts with high MOE on any demographic variable</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Use logical operators (| for OR) in an ifelse() statement</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>tract_moe <span class="sc">%&gt;%</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(county, GEOID) <span class="sc">%&gt;%</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(county) <span class="sc">%&gt;%</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(GEOID, county,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>         white, white_moe_pct,</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>         black, black_moe_pct,</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>         hispanic, hispanic_moe_pct,</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>         high_moe_flag) <span class="sc">%&gt;%</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"MOE% for race/ethnicity estimates (sample tracts)"</span>,</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"GEOID"</span>, <span class="st">"County"</span>,</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"White (count)"</span>, <span class="st">"White MOE%"</span>,</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Black (count)"</span>, <span class="st">"Black MOE%"</span>,</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Hispanic (count)"</span>, <span class="st">"Hispanic MOE%"</span>,</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"High MOE Flag (&gt;15%)"</span>)</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">high_moe_flag =</span> <span class="fu">if_else</span>(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      white_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">|</span> black_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">|</span> hispanic_moe_pct <span class="sc">&gt;</span> <span class="dv">15</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>, <span class="cn">FALSE</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a flag for tracts with high MOE on any demographic variable</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Use logical operators (| for OR) in an ifelse() statement</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>tract_moe <span class="sc">%&gt;%</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(county, GEOID) <span class="sc">%&gt;%</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(county) <span class="sc">%&gt;%</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(GEOID, county,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>         white, white_moe_pct,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>         black, black_moe_pct,</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>         hispanic, hispanic_moe_pct,</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>         high_moe_flag) <span class="sc">%&gt;%</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"MOE% for race/ethnicity estimates (sample tracts)"</span>,</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"GEOID"</span>, <span class="st">"County"</span>,</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"White (count)"</span>, <span class="st">"White MOE%"</span>,</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Black (count)"</span>, <span class="st">"Black MOE%"</span>,</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Hispanic (count)"</span>, <span class="st">"Hispanic MOE%"</span>,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"High MOE Flag (&gt;15%)"</span>)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="table caption-top table-sm table-striped small">
 <caption>MOE% for race/ethnicity estimates (sample tracts)</caption>
@@ -1283,12 +1282,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="analysis-integration-and-professional-summary" class="level2">
 <h2 class="anchored" data-anchor-id="analysis-integration-and-professional-summary">5.1 Analysis Integration and Professional Summary</h2>
 <p><strong>Your Task:</strong> Write an executive summary that integrates findings from all four analyses.</p>
-<p><strong>Executive Summary Requirements:</strong> 1. <strong>Overall Pattern Identification</strong>: What are the systematic patterns across all your analyses? 2. <strong>Equity Assessment</strong>: Which communities face the greatest risk of algorithmic bias based on your findings? 3. <strong>Root Cause Analysis</strong>: What underlying factors drive both data quality issues and bias risk? 4. <strong>Strategic Recommendations</strong>: What should the Department implement to address these systematic issues?</p>
+<p><strong>Executive Summary Requirements:</strong> 1. <strong>Overall Pattern Identification</strong>: What are the systematic patterns across all your analyses?</p>
+<ol start="2" type="1">
+<li><p><strong>Equity Assessment</strong>: Which communities face the greatest risk of algorithmic bias based on your findings?</p></li>
+<li><p><strong>Root Cause Analysis</strong>: What underlying factors drive both data quality issues and bias risk?</p></li>
+<li><p><strong>Strategic Recommendations</strong>: What should the Department implement to address these systematic issues?</p></li>
+</ol>
 <p><strong>Executive Summary:</strong></p>
-<p>Overall Pattern Identification Our analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.</p>
-<p>Equity Assessment Communities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.</p>
-<p>Root Cause Analysis The underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.</p>
-<p>Strategic Recommendations To mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities.</p>
+<p>1.Overall Pattern Identification</p>
+<p>Our analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.</p>
+<p>2.Equity Assessment</p>
+<p>Communities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.</p>
+<p>3.Root Cause Analysis</p>
+<p>The underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.</p>
+<p>4.Strategic Recommendations</p>
+<p>To mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities.</p>
 </section>
 <section id="specific-recommendations" class="level2">
 <h2 class="anchored" data-anchor-id="specific-recommendations">6.3 Specific Recommendations</h2>
@@ -1387,8 +1395,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Technical Notes</h1>
 <p><strong>Data Sources:</strong> - U.S. Census Bureau, American Community Survey 2018-2022 5-Year Estimates - Retrieved via tidycensus R package on [date]</p>
 <p><strong>Reproducibility:</strong> - All analysis conducted in R version [your version] - Census API key required for replication - Complete code and documentation available at: [your portfolio URL]</p>
-<p><strong>Methodology Notes:</strong> [Describe any decisions you made about data processing, county selection, or analytical choices that might affect reproducibility]</p>
-<p><strong>Limitations:</strong> [Note any limitations in your analysis - sample size issues, geographic scope, temporal factors, etc.]</p>
+<p><strong>Methodology Notes:</strong> Several key decisions were made during the analysis that affect reproducibility. First, counties were selected based on reliability categories derived from ACS income margins of error, ensuring representation across high- and moderate-confidence cases. Where no counties fell into the “Low Confidence” category, the county with the highest MOE percentage was included to illustrate potential issues. At the tract level, demographic estimates were processed by calculating MOE percentages for racial/ethnic groups and flagging tracts above a 15% threshold. These processing choices shaped the reliability categories and downstream recommendations.</p>
+<p><strong>Limitations:</strong> This analysis is constrained by several limitations. The ACS relies on sample surveys, and margins of error are particularly high in small, rural tracts, limiting the precision of estimates for minority populations. Geographic scope was restricted to three Pennsylvania counties, meaning that findings may not generalize to more urban or diverse areas. In addition, the analysis uses a single ACS release, so temporal variability in income and demographic estimates was not captured. These limitations suggest that conclusions should be interpreted with caution and supplemented with additional data sources where possible.</p>
 <hr>
 <section id="submission-checklist" class="level2">
 <h2 class="anchored" data-anchor-id="submission-checklist">Submission Checklist</h2>

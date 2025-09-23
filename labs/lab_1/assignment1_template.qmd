@@ -179,7 +179,7 @@ kable(
     "MOE Percentage",
     "Reliability Category"
   ),
-  digits = 1 # 保留一位小数（对收入数字则会四舍五入）
+  digits = 1 
 )
 ```
 
@@ -202,7 +202,7 @@ library(stringr)
 pick_county_by_conf <- function(df, conf) {
   df_conf <- df %>% filter(reliability == conf)
   if (nrow(df_conf) == 0) {
-    return(tibble())     # 返回空 tibble，调用方会做 fallback
+    return(tibble())     
   }
   med_moe <- median(df_conf$moe_pct_income, na.rm = TRUE)
   picked <- df_conf %>%
@@ -226,7 +226,7 @@ if (nrow(mc_pick) == 0) {
   mc_pick <- county_reliability %>% arrange(desc(moe_pct_income)) %>% slice_head(n = 1)
 }
 if (nrow(lc_pick) == 0) {
-  # 选择 MOE% 最大的作为 Low 的代表（如果本来就没有 Low 类）
+
   lc_pick <- county_reliability %>% arrange(desc(moe_pct_income)) %>% slice_head(n = 1)
 }
 # Show: county name, median income, MOE percentage, reliability category
@@ -295,7 +295,7 @@ tract_demo <- tract_raw %>%
   transmute(
     GEOID,
     tract_name = NAME,
-    # 从 NAME 中提取县名（如果格式不完全一致，county 列会尽可能提取）
+
     county = str_extract(NAME, paste(counties_to_get, collapse = "|")),
     total_pop = total_popE,
     total_pop_moe = total_popM,
@@ -384,7 +384,6 @@ tract_moe <- tract_demo %>%
     white_moe_pct = if_else(white > 0, 100 * white_moe / white, NA_real_),
     black_moe_pct = if_else(black > 0, 100 * black_moe / black, NA_real_),
     hispanic_moe_pct = if_else(hispanic > 0, 100 * hispanic_moe / hispanic, NA_real_),
-    # flag: 如果任意族裔 MOE% > 15% 则标记
     high_moe_flag = if_else(
       white_moe_pct > 15 | black_moe_pct > 15 | hispanic_moe_pct > 15,
       TRUE, FALSE
@@ -472,22 +471,29 @@ These findings suggest that data quality problems are not randomly distributed b
 
 **Executive Summary Requirements:**
 1. **Overall Pattern Identification**: What are the systematic patterns across all your analyses?
+
 2. **Equity Assessment**: Which communities face the greatest risk of algorithmic bias based on your findings?
+
 3. **Root Cause Analysis**: What underlying factors drive both data quality issues and bias risk?
+
 4. **Strategic Recommendations**: What should the Department implement to address these systematic issues?
 
 **Executive Summary:**
 
-Overall Pattern Identification
+1.Overall Pattern Identification
+
 Our analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.
 
-Equity Assessment
+2.Equity Assessment
+
 Communities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.
 
-Root Cause Analysis
+3.Root Cause Analysis
+
 The underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.
 
-Strategic Recommendations
+4.Strategic Recommendations
+
 To mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities.
 
 ## 6.3 Specific Recommendations
@@ -555,10 +561,10 @@ recommendations %>%
 - Complete code and documentation available at: [your portfolio URL]
 
 **Methodology Notes:**
-[Describe any decisions you made about data processing, county selection, or analytical choices that might affect reproducibility]
+Several key decisions were made during the analysis that affect reproducibility. First, counties were selected based on reliability categories derived from ACS income margins of error, ensuring representation across high- and moderate-confidence cases. Where no counties fell into the “Low Confidence” category, the county with the highest MOE percentage was included to illustrate potential issues. At the tract level, demographic estimates were processed by calculating MOE percentages for racial/ethnic groups and flagging tracts above a 15% threshold. These processing choices shaped the reliability categories and downstream recommendations.
 
 **Limitations:**
-[Note any limitations in your analysis - sample size issues, geographic scope, temporal factors, etc.]
+This analysis is constrained by several limitations. The ACS relies on sample surveys, and margins of error are particularly high in small, rural tracts, limiting the precision of estimates for minority populations. Geographic scope was restricted to three Pennsylvania counties, meaning that findings may not generalize to more urban or diverse areas. In addition, the analysis uses a single ACS release, so temporal variability in income and demographic estimates was not captured. These limitations suggest that conclusions should be interpreted with caution and supplemented with additional data sources where possible.
 
 ---
 
