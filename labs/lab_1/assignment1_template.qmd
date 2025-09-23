@@ -57,7 +57,7 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 # Set your Census API key
-census_api_key("1c6a8b55f564cfbcb4398bab3b845f90d7055d0d", install = TRUE)
+#census_api_key("1c6a8b55f564cfbcb4398bab3b845f90d7055d0d", install = TRUE)
 
 # Choose your state for analysis - assign it to a variable called my_state
 my_state <- "Pennsylvania"
@@ -379,11 +379,54 @@ knitr::kable(
 ```{r demographic-moe}
 # Calculate MOE percentages for white, Black, and Hispanic variables
 # Hint: use the same formula as before (margin/estimate * 100)
-
+tract_moe <- tract_demo %>%
+  mutate(
+    white_moe_pct = if_else(white > 0, 100 * white_moe / white, NA_real_),
+    black_moe_pct = if_else(black > 0, 100 * black_moe / black, NA_real_),
+    hispanic_moe_pct = if_else(hispanic > 0, 100 * hispanic_moe / hispanic, NA_real_),
+    # flag: 如果任意族裔 MOE% > 15% 则标记
+    high_moe_flag = if_else(
+      white_moe_pct > 15 | black_moe_pct > 15 | hispanic_moe_pct > 15,
+      TRUE, FALSE
+    )
+  )
 # Create a flag for tracts with high MOE on any demographic variable
 # Use logical operators (| for OR) in an ifelse() statement
+tract_moe %>%
+  arrange(county, GEOID) %>%
+  group_by(county) %>%
+  slice_head(n = 5) %>%
+  ungroup() %>%
+  select(GEOID, county,
+         white, white_moe_pct,
+         black, black_moe_pct,
+         hispanic, hispanic_moe_pct,
+         high_moe_flag) %>%
+  kable(
+    caption = "MOE% for race/ethnicity estimates (sample tracts)",
+    col.names = c("GEOID", "County",
+                  "White (count)", "White MOE%",
+                  "Black (count)", "Black MOE%",
+                  "Hispanic (count)", "Hispanic MOE%",
+                  "High MOE Flag (>15%)")
+  ) %>%
+  kable_styling(full_width = FALSE)
 
 # Create summary statistics showing how many tracts have data quality issues
+moe_summary <- tract_moe %>%
+  group_by(county) %>%
+  summarize(
+    n_tracts = n(),
+    n_high_moe = sum(high_moe_flag, na.rm = TRUE),
+    pct_high_moe = round(100 * n_high_moe / n_tracts, 1)
+  )
+
+moe_summary %>%
+  kable(
+    caption = "Summary of tracts with high MOE (>15%)",
+    col.names = c("County", "N tracts", "High-MOE tracts", "% High-MOE")
+  ) %>%
+  kable_styling(full_width = FALSE)
 ```
 
 ## 4.2 Pattern Analysis
@@ -394,12 +437,31 @@ knitr::kable(
 # Group tracts by whether they have high MOE issues
 # Calculate average characteristics for each group:
 # - population size, demographic percentages
-
+pattern_summary <- tract_moe %>%
+  group_by(high_moe_flag) %>%
+  summarize(
+    n_tracts = n(),
+    avg_pop = mean(total_pop, na.rm = TRUE),
+    avg_pct_white = mean(pct_white, na.rm = TRUE),
+    avg_pct_black = mean(pct_black, na.rm = TRUE),
+    avg_pct_hispanic = mean(pct_hispanic, na.rm = TRUE)
+  )
 # Use group_by() and summarize() to create this comparison
 # Create a professional table showing the patterns
+library(knitr)
+pattern_summary %>%
+  kable(
+    digits = 1,
+    col.names = c("High MOE Flag", "N tracts", "Avg Pop", "Avg % White", "Avg % Black", "Avg % Hispanic"),
+    caption = "Comparison of tract characteristics by data quality group"
+  )
 ```
 
-**Pattern Analysis:** [Describe any patterns you observe. Do certain types of communities have less reliable data? What might explain this?]
+**Pattern Analysis:** The pattern analysis shows that nearly all tracts in the study area fall into the high-MOE category. On average, these high-MOE tracts have populations of about 3,400 residents and are predominantly White (93%), with very small Black (1.7%) and Hispanic (2.3%) populations.
+
+By contrast, the two tracts without usable MOE calculations are somewhat smaller (about 2,250 residents) and almost entirely White.
+
+These findings suggest that data quality problems are not randomly distributed but instead strongly associated with the demographic composition of the counties. In particular, tracts with very small minority populations tend to have especially large margins of error, reflecting the challenges of reliably estimating characteristics in small, rural communities.
 
 
 # Part 5: Policy Recommendations
@@ -416,7 +478,17 @@ knitr::kable(
 
 **Executive Summary:**
 
-[Your integrated 4-paragraph summary here]
+Overall Pattern Identification
+Our analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.
+
+Equity Assessment
+Communities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.
+
+Root Cause Analysis
+The underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.
+
+Strategic Recommendations
+To mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities.
 
 ## 6.3 Specific Recommendations
 
@@ -425,28 +497,51 @@ knitr::kable(
 ```{r recommendations-data}
 # Create a summary table using your county reliability data
 # Include: county name, median income, MOE percentage, reliability category
-
+library(dplyr)
+library(knitr)
+recommendations <- selected_counties %>%
+  transmute(
+    County=county,
+    Median_Income = median_income,
+    MOE_Pct = round(moe_pct, 1),
+    Reliability = reliability,
+    Recommendation = case_when(
+      Reliability == "High Confidence" ~ "Safe for algorithmic decisions",
+      Reliability == "Moderate Confidence" ~ "Use with caution - monitor outcomes",
+      Reliability == "Low Confidence" ~ "Requires manual review or additional data",
+      TRUE ~ "Not classified"
+    )
+  )
 # Add a new column with algorithm recommendations using case_when():
 # - High Confidence: "Safe for algorithmic decisions"
 # - Moderate Confidence: "Use with caution - monitor outcomes"  
 # - Low Confidence: "Requires manual review or additional data"
 
 # Format as a professional table with kable()
+recommendations %>%
+  kable(
+    digits = 1,
+    col.names = c("County", "Median Income", "MOE %", "Reliability Category", "Algorithm Recommendation"),
+    caption = "Framework for Algorithmic Decision-Making by County"
+  )
 ```
 
 **Key Recommendations:**
 
 **Your Task:** Use your analysis results to provide specific guidance to the department.
 
-1. **Counties suitable for immediate algorithmic implementation:** [List counties with high confidence data and explain why they're appropriate]
+1. **Counties suitable for immediate algorithmic implementation:** Susquehanna County qualifies for immediate algorithmic implementation. Its median household income estimates have a low margin of error (3.1%) and fall into the High Confidence category. This level of data reliability indicates that automated systems can be used here with minimal risk of bias or misallocation.
 
-2. **Counties requiring additional oversight:** [List counties with moderate confidence data and describe what kind of monitoring would be needed]
+2. **Counties requiring additional oversight:** Elk County and Forest County fall under the Moderate Confidence category, with MOE percentages between 6–10%. Algorithms may be applied in these counties, but their outcomes should be closely monitored. Recommended oversight includes: (a) periodic validation of algorithm outputs against ground-level administrative records, and (b) monitoring for systematic underrepresentation of smaller minority populations.
 
-3. **Counties needing alternative approaches:** [List counties with low confidence data and suggest specific alternatives - manual review, additional surveys, etc.]
+3. **Counties needing alternative approaches:** In this analysis, no counties fell into the Low Confidence category. However, if future updates reveal tracts with very high MOE or unstable estimates, the Department should consider alternatives such as manual review of high-risk cases, supplemental state-level surveys, or partnerships with local agencies to gather more reliable demographic information.
 
 ## Questions for Further Investigation
+1.Spatial patterns of uncertainty: Are data quality issues more pronounced in specific geographic areas (e.g., border tracts, rural interior tracts) within these counties?
 
-[List 2-3 questions that your analysis raised that you'd like to explore further in future assignments. Consider questions about spatial patterns, time trends, or other demographic factors.]
+2.Temporal stability: How do MOE levels and demographic compositions change across different ACS release years? Do certain counties show increasing or decreasing reliability over time?
+
+3.Equity implications: How might measurement error differentially affect smaller racial/ethnic populations, and what safeguards could be added to prevent bias in algorithmic decision-making?
 
 # Technical Notes
 
