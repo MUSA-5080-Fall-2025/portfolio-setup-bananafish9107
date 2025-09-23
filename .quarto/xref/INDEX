@@ -22,5 +22,8 @@
   },
   "about.qmd": {
     "about.html": "09f4d622"
+  },
+  "labs/lab_1/assignment1_template.qmd": {
+    "assignment1_template.html": "07a46694"
   }
 }

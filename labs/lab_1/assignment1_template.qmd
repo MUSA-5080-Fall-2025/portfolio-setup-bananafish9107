@@ -52,13 +52,18 @@ If there is a special character like comma, you need use double quote mark so th
 
 ```{r setup}
 # Load required packages (hint: you need tidycensus, tidyverse, and knitr)
-
+library(tidycensus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
 # Set your Census API key
+census_api_key("1c6a8b55f564cfbcb4398bab3b845f90d7055d0d", install = TRUE)
 
 # Choose your state for analysis - assign it to a variable called my_state
+my_state <- "Pennsylvania"
 ```
 
-**State Selection:** I have chosen **[Your State Name]** for this analysis because: [Brief explanation of why you chose this state]
+**State Selection:** I have chosen **Pennsylvania** for this analysis because it is where I currently live. 
 
 # Part 2: County-Level Resource Assessment
 
@@ -77,11 +82,28 @@ If there is a special character like comma, you need use double quote mark so th
 
 ```{r county-data}
 # Write your get_acs() code here
-
+acs_vars <- c(
+  median_income = "B19013_001",
+  total_population = "B01003_001"
+)
+county_data <- get_acs(
+  geography = "county",
+  variables = acs_vars,
+  state = my_state,
+  year = 2022,
+  survey = "acs5",
+  output = "wide"
+)
 # Clean the county names to remove state name and "County" 
+county_data <- county_data %>%
+  mutate(
+    county = str_remove(NAME, " County,.*")
+  ) %>%
+  select(county, everything())
 # Hint: use mutate() with str_remove()
 
 # Display the first few rows
+head(county_data)
 ```
 
 ## 2.2 Data Quality Assessment
@@ -100,8 +122,24 @@ If there is a special character like comma, you need use double quote mark so th
 
 ```{r income-reliability}
 # Calculate MOE percentage and reliability categories using mutate()
+county_reliability <- county_data %>%
+  mutate(
+    moe_pct_income = (median_incomeM / median_incomeE) * 100,
+    reliability = case_when(
+      moe_pct_income < 5 ~ "High Confidence",
+      moe_pct_income >= 5 & moe_pct_income <= 10 ~ "Moderate Confidence",
+      moe_pct_income > 10 ~ "Low Confidence",
+      TRUE ~ "Missing"
+    )
+  )
 
 # Create a summary showing count of counties in each reliability category
+reliability_summary <- county_reliability %>%
+  count(reliability) %>%
+  mutate(
+    pct = round(100 * n / sum(n), 1)
+  )
+reliability_summary
 # Hint: use count() and mutate() to add percentages
 ```
 
@@ -119,13 +157,35 @@ If there is a special character like comma, you need use double quote mark so th
 
 ```{r high-uncertainty}
 # Create table of top 5 counties by MOE percentage
-
+library(knitr)
+top_uncertainty <- county_reliability %>%
+  arrange(desc(moe_pct_income)) %>%
+  slice_head(n = 5) %>%
+  select(
+    county,
+    median_incomeE,
+    median_incomeM,
+    moe_pct_income,
+    reliability
+  )
 # Format as table with kable() - include appropriate column names and caption
+kable(
+  top_uncertainty,
+  caption = "Top 5 Counties with Highest Income MOE Percentage",
+  col.names = c(
+    "County",
+    "Median Income (Estimate)",
+    "Median Income (MOE)",
+    "MOE Percentage",
+    "Reliability Category"
+  ),
+  digits = 1 # 保留一位小数（对收入数字则会四舍五入）
+)
 ```
 
 **Data Quality Commentary:**
+Counties such as Forest and Sullivan show higher uncertainty in their income estimates, meaning algorithms could misjudge local needs if they rely on these values. This uncertainty is often linked to smaller populations and limited ACS survey samples in rural areas.
 
-[Write 2-3 sentences explaining what these results mean for algorithmic decision-making. Consider: Which counties might be poorly served by algorithms that rely on this income data? What factors might contribute to higher uncertainty?]
 
 # Part 3: Neighborhood-Level Analysis
 
@@ -137,10 +197,54 @@ If there is a special character like comma, you need use double quote mark so th
 
 ```{r select-counties}
 # Use filter() to select 2-3 counties from your county_reliability data
+library(dplyr)
+library(stringr)
+pick_county_by_conf <- function(df, conf) {
+  df_conf <- df %>% filter(reliability == conf)
+  if (nrow(df_conf) == 0) {
+    return(tibble())     # 返回空 tibble，调用方会做 fallback
+  }
+  med_moe <- median(df_conf$moe_pct_income, na.rm = TRUE)
+  picked <- df_conf %>%
+    mutate(diff = abs(moe_pct_income - med_moe)) %>%
+    arrange(diff) %>%
+    slice_head(n = 1)
+  return(picked %>% select(GEOID, county, median_incomeE, median_incomeM, moe_pct_income, reliability))
+}
+
+
 # Store the selected counties in a variable called selected_counties
+hc_pick <- pick_county_by_conf(county_reliability, "High Confidence")
+mc_pick <- pick_county_by_conf(county_reliability, "Moderate Confidence")
+lc_pick <- pick_county_by_conf(county_reliability, "Low Confidence")
 
 # Display the selected counties with their key characteristics
+if (nrow(hc_pick) == 0) {
+  hc_pick <- county_reliability %>% arrange(moe_pct_income) %>% slice_head(n = 1)
+}
+if (nrow(mc_pick) == 0) {
+  mc_pick <- county_reliability %>% arrange(desc(moe_pct_income)) %>% slice_head(n = 1)
+}
+if (nrow(lc_pick) == 0) {
+  # 选择 MOE% 最大的作为 Low 的代表（如果本来就没有 Low 类）
+  lc_pick <- county_reliability %>% arrange(desc(moe_pct_income)) %>% slice_head(n = 1)
+}
 # Show: county name, median income, MOE percentage, reliability category
+selected_counties <- bind_rows(hc_pick, mc_pick, lc_pick) %>%
+  distinct(GEOID, .keep_all = TRUE) %>%
+  mutate(
+    median_income = median_incomeE,
+    median_income_moe = median_incomeM,
+    moe_pct = round(moe_pct_income, 2)
+  ) %>%
+  select(GEOID, county, median_income, median_income_moe, moe_pct, reliability)
+
+selected_counties %>%
+  mutate(
+    median_income = scales::dollar(median_income),
+    median_income_moe = scales::dollar(median_income_moe)
+  ) %>%
+  knitr::kable(caption = "Selected counties for tract-level analysis (representing different reliability levels)")
 ```
 
 **Comment on the output:** [write something :)]
@@ -157,15 +261,69 @@ If there is a special character like comma, you need use double quote mark so th
 - **Challenge:** You'll need county codes, not names. Look at the GEOID patterns in your county data for hints.
 
 ```{r tract-demographics}
+library(tidycensus)
+library(dplyr)
+library(stringr)
+library(knitr)
+library(kableExtra)
 # Define your race/ethnicity variables with descriptive names
+tract_vars <- c(
+  total_pop = "B03002_001",
+  white = "B03002_003",
+  black = "B03002_004",
+  hispanic = "B03002_012"
+)
+
+counties_to_get <- c("Susquehanna", "Elk", "Forest")
 
 # Use get_acs() to retrieve tract-level data
+tract_raw <- get_acs(
+  geography = "tract",
+  state = my_state,
+  county = counties_to_get,
+  variables = tract_vars,
+  year = 2022,
+  survey = "acs5",
+  output = "wide",
+  geometry = FALSE
+)
 # Hint: You may need to specify county codes in the county parameter
-
 # Calculate percentage of each group using mutate()
+
 # Create percentages for white, Black, and Hispanic populations
+tract_demo <- tract_raw %>%
+  transmute(
+    GEOID,
+    tract_name = NAME,
+    # 从 NAME 中提取县名（如果格式不完全一致，county 列会尽可能提取）
+    county = str_extract(NAME, paste(counties_to_get, collapse = "|")),
+    total_pop = total_popE,
+    total_pop_moe = total_popM,
+    white = whiteE, white_moe = whiteM,
+    black = blackE, black_moe = blackM,
+    hispanic = hispanicE, hispanic_moe = hispanicM,
+    pct_white = if_else(total_pop > 0, 100 * white / total_pop, NA_real_),
+    pct_black = if_else(total_pop > 0, 100 * black / total_pop, NA_real_),
+    pct_hispanic = if_else(total_pop > 0, 100 * hispanic / total_pop, NA_real_)
+  ) %>%
+  mutate(
+    pct_white = round(pct_white, 1),
+    pct_black = round(pct_black, 1),
+    pct_hispanic = round(pct_hispanic, 1)
+  )
 
 # Add readable tract and county name columns using str_extract() or similar
+tract_demo %>%
+  arrange(county, GEOID) %>%
+  group_by(county) %>%
+  slice_head(n = 8) %>%
+  ungroup() %>%
+  select(GEOID, tract_name, county, total_pop, pct_white, pct_black, pct_hispanic) %>%
+  kable(
+    caption = "Sample tracts (first 8 per selected county)",
+    col.names = c("GEOID", "Tract name", "County", "Total pop", "% White", "% Black", "% Hispanic")
+  ) %>%
+  kable_styling(full_width = FALSE)
 ```
 
 ## 3.3 Demographic Analysis
@@ -175,11 +333,36 @@ If there is a special character like comma, you need use double quote mark so th
 ```{r demographic-analysis}
 # Find the tract with the highest percentage of Hispanic/Latino residents
 # Hint: use arrange() and slice() to get the top tract
+top_hispanic <- tract_demo %>%
+  filter(!is.na(pct_hispanic)) %>%
+  arrange(desc(pct_hispanic)) %>%
+  slice_head(n = 1) %>%
+  select(GEOID, tract_name, county, total_pop, pct_hispanic)
+
+knitr::kable(
+  top_hispanic,
+  caption = "Tract with highest % Hispanic among selected counties",
+  col.names = c("GEOID", "Tract Name", "County", "Total Population", "% Hispanic")
+)
 
 # Calculate average demographics by county using group_by() and summarize()
 # Show: number of tracts, average percentage for each racial/ethnic group
+county_summary <- tract_demo %>%
+  group_by(county) %>%
+  summarize(
+    n_tracts = n(),
+    avg_pct_white = round(mean(pct_white, na.rm = TRUE), 1),
+    avg_pct_black = round(mean(pct_black, na.rm = TRUE), 1),
+    avg_pct_hispanic = round(mean(pct_hispanic, na.rm = TRUE), 1)
+  ) %>%
+  arrange(desc(avg_pct_hispanic))
 
 # Create a nicely formatted table of your results using kable()
+knitr::kable(
+  county_summary,
+  caption = "Average tract-level demographics by county",
+  col.names = c("County", "N tracts", "Avg % White", "Avg % Black", "Avg % Hispanic")
+)
 ```
 
 # Part 4: Comprehensive Data Quality Evaluation
