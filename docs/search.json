@@ -1,5 +1,131 @@
 [
   {
+    "objectID": "weekly-notes/week-08-notes.html",
+    "href": "weekly-notes/week-08-notes.html",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-08-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-08-notes.html#key-concepts-learned",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-08-notes.html#coding-techniques",
+    "href": "weekly-notes/week-08-notes.html#coding-techniques",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nMain Header"
+  },
+  {
+    "objectID": "weekly-notes/week-08-notes.html#questions-challenges",
+    "href": "weekly-notes/week-08-notes.html#questions-challenges",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+  },
+  {
+    "objectID": "weekly-notes/week-08-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-08-notes.html#connections-to-policy",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+  },
+  {
+    "objectID": "weekly-notes/week-08-notes.html#reflection",
+    "href": "weekly-notes/week-08-notes.html#reflection",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Reflection",
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html",
+    "href": "weekly-notes/week-06-notes.html",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-06-notes.html#key-concepts-learned",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html#coding-techniques",
+    "href": "weekly-notes/week-06-notes.html#coding-techniques",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nMain Header"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html#questions-challenges",
+    "href": "weekly-notes/week-06-notes.html#questions-challenges",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-06-notes.html#connections-to-policy",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+  },
+  {
+    "objectID": "weekly-notes/week-06-notes.html#reflection",
+    "href": "weekly-notes/week-06-notes.html#reflection",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Reflection",
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html",
+    "href": "weekly-notes/week-04-notes.html",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-04-notes.html#key-concepts-learned",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#coding-techniques",
+    "href": "weekly-notes/week-04-notes.html#coding-techniques",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nMain Header"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#questions-challenges",
+    "href": "weekly-notes/week-04-notes.html#questions-challenges",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-04-notes.html#connections-to-policy",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#reflection",
+    "href": "weekly-notes/week-04-notes.html#reflection",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Reflection",
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+  },
+  {
     "objectID": "weekly-notes/week-02-notes.html",
     "href": "weekly-notes/week-02-notes.html",
     "title": "Week 2 Notes - Census Data",
@@ -130,7 +256,7 @@
     "href": "labs/lab_1/assignment1_template.html#analysis-integration-and-professional-summary",
     "title": "Assignment 1: Census Data Quality for Policy Decisions",
     "section": "5.1 Analysis Integration and Professional Summary",
-    "text": "5.1 Analysis Integration and Professional Summary\nYour Task: Write an executive summary that integrates findings from all four analyses.\nExecutive Summary Requirements: 1. Overall Pattern Identification: What are the systematic patterns across all your analyses?\n\nEquity Assessment: Which communities face the greatest risk of algorithmic bias based on your findings?\nRoot Cause Analysis: What underlying factors drive both data quality issues and bias risk?\nStrategic Recommendations: What should the Department implement to address these systematic issues?\n\nExecutive Summary:\n1.Overall Pattern Identification\nOur analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.\n2.Equity Assessment\nCommunities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.\n3.Root Cause Analysis\nThe underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.\n4.Strategic Recommendations\nTo mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities."
+    "text": "5.1 Analysis Integration and Professional Summary\nYour Task: Write an executive summary that integrates findings from all four analyses.\nExecutive Summary Requirements:\n\nOverall Pattern Identification: What are the systematic patterns across all your analyses?\nEquity Assessment: Which communities face the greatest risk of algorithmic bias based on your findings?\nRoot Cause Analysis: What underlying factors drive both data quality issues and bias risk?\nStrategic Recommendations: What should the Department implement to address these systematic issues?\n\nExecutive Summary:\n1.Overall Pattern Identification\nOur analysis of income and demographic data across three Pennsylvania counties—Forest, Susquehanna, and Elk—reveals systematic data quality challenges. Income estimates generally fall within a moderate confidence range, with margins of error around 7–10% in several counties. At the tract level, demographic estimates show even greater uncertainty: over 75% of tracts in Elk and 100% of tracts in both Forest and Susquehanna exceed the 15% MOE threshold for racial/ethnic characteristics. These patterns demonstrate that uncertainty is not random but concentrated in small, rural communities.\n2.Equity Assessment\nCommunities with the highest data uncertainty are predominantly rural and overwhelmingly White, with very small Black and Hispanic populations. Because minority groups are so sparsely represented, the estimates for these populations are especially unreliable. Algorithms that rely on these data to allocate resources or assess equity risk systematically under-serving minority communities in these counties, since both absolute population counts and proportions may be skewed by large margins of error.\n3.Root Cause Analysis\nThe underlying drivers of these data quality issues include small population size at the tract level, limited Census sampling coverage in rural areas, and the statistical difficulty of estimating characteristics for very small subgroups. These conditions compound in counties like Forest and Susquehanna, where small total populations and very limited diversity magnify the uncertainty of demographic estimates. As a result, the same communities most in need of precise measurement are those where statistical reliability is lowest.\n4.Strategic Recommendations\nTo mitigate risks of algorithmic bias, the Department should adopt a cautious approach to using tract-level data in small rural counties. Strategies may include: (1) implementing reliability thresholds that flag and down-weight high-MOE estimates in automated systems; (2) supplementing ACS data with administrative or state-collected sources to validate minority population estimates; (3) investing in oversampling or improved survey design in rural areas; and (4) ensuring that equity assessments explicitly account for measurement error. These steps will improve the fairness and robustness of algorithmic decision-making for Pennsylvania’s most vulnerable communities."
   },
   {
     "objectID": "labs/lab_1/assignment1_template.html#specific-recommendations",
@@ -500,6 +626,132 @@
     "objectID": "weekly-notes/week-01-notes.html#reflection",
     "href": "weekly-notes/week-01-notes.html#reflection",
     "title": "Week 1 Notes - Course Introduction",
+    "section": "Reflection",
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html",
+    "href": "weekly-notes/week-03-notes.html",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "",
+    "text": "Visualization in policy context\nggplot2 fundamentals\nEDA:Exploratory Data Analysis"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-03-notes.html#key-concepts-learned",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "",
+    "text": "Visualization in policy context\nggplot2 fundamentals\nEDA:Exploratory Data Analysis"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#coding-techniques",
+    "href": "weekly-notes/week-03-notes.html#coding-techniques",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nHow to display the data (points, bars, lines)\nggplot(data = your_data) + aes(x = variable1, y = variable2) + geom_something() + additional_layers()\nx, y - position\ncolor - point/line color\nfill - area fill color\nsize - point/line size\nshape - point shape\nalpha - transparency"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#questions-challenges",
+    "href": "weekly-notes/week-03-notes.html#questions-challenges",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\nSummary statistics can hide critical patterns\nOutliers may represent important communities\nRelationships aren’t always linear\nVisual inspection reveals data quality issues"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-03-notes.html#connections-to-policy",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\nImportance of Visualization\nSummary statistics alone (means, variances) can hide critical patterns.\nVisualizations reveal geographic concentrations, demographic differences, temporal trends, and data-quality issues.\nPolicy Impact\nMisleading charts—wrong scales, cherry-picked time periods, or hidden uncertainty—can lead to poor resource allocation and inequitable decisions.\nUsing ACS data requires ethical practice per the AICP Code of Ethics: always report margins of error, explain reliability (e.g., coefficient of variation), and test for statistical significance.\nPractical Example\nMapping child poverty data can identify high-risk communities and guide targeted interventions."
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#reflection",
+    "href": "weekly-notes/week-03-notes.html#reflection",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "Reflection",
+    "text": "Reflection\n\nProfessional Ethics\nTransparent communication of uncertainty is a professional responsibility, not just a technical detail.\nSmall-population areas often have higher sampling error and must not be overlooked or misrepresented.\nKey Takeaways\nApproach data like a detective: explore, question, and verify before modeling.\nVisualization is both a quality check and a storytelling tool.\nQuestions for Practice\nHow can I ensure my graphics are both accurate and accessible?\nWhat annotations or explanations help non-experts understand data limitations?\n\n##General workflow - Load & Inspect – Check dimensions, variable types, and missing values. - Assess Reliability – Examine margins of error and compute coefficients of variation (CV). - Visualize Distributions – Use histograms and boxplots to see spread and detect outliers. - Explore Relationships – Create scatter plots, calculate correlations, and look for non-linear patterns. - Identify Patterns – Use grouping, clustering, and spatial analysis to detect geographic or demographic structures. - Question Anomalies – Investigate outliers to distinguish data errors from meaningful signals. - Document Limitations – Clearly communicate data sources, uncertainty, and caveats in reports and visuals. - Integrate Data – Use joins (e.g., left_join) to combine multiple datasets such as census and economic indicators, then re-check quality."
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html",
+    "href": "weekly-notes/week-05-notes.html",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-05-notes.html#key-concepts-learned",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html#coding-techniques",
+    "href": "weekly-notes/week-05-notes.html#coding-techniques",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nMain Header"
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html#questions-challenges",
+    "href": "weekly-notes/week-05-notes.html#questions-challenges",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-05-notes.html#connections-to-policy",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+  },
+  {
+    "objectID": "weekly-notes/week-05-notes.html#reflection",
+    "href": "weekly-notes/week-05-notes.html#reflection",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Reflection",
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html",
+    "href": "weekly-notes/week-07-notes.html",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#key-concepts-learned",
+    "href": "weekly-notes/week-07-notes.html#key-concepts-learned",
+    "title": "Week 2 Notes - Census Data",
+    "section": "",
+    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#coding-techniques",
+    "href": "weekly-notes/week-07-notes.html#coding-techniques",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Coding Techniques",
+    "text": "Coding Techniques\n\nMain Header"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#questions-challenges",
+    "href": "weekly-notes/week-07-notes.html#questions-challenges",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Questions & Challenges",
+    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#connections-to-policy",
+    "href": "weekly-notes/week-07-notes.html#connections-to-policy",
+    "title": "Week 2 Notes - Census Data",
+    "section": "Connections to Policy",
+    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#reflection",
+    "href": "weekly-notes/week-07-notes.html#reflection",
+    "title": "Week 2 Notes - Census Data",
     "section": "Reflection",
     "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
   }

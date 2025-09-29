@@ -1,0 +1,62 @@
+---
+title: "Week 2 Notes - Census Data"
+date: "2025-09-18"
+---
+
+## Key Concepts Learned
+- Repository(repo): folders containing project files 
+- Commit: snapshot work at a point
+  Push: send changes to the Github cloud 
+  Pull: get the latest changes from the Github cloud
+- Quarto: Publishing system into professional documents
+  
+## Coding Techniques
+- Main Header
+
+
+## Questions & Challenges
+- 4. Why do some of my pages show as not existing on 404? 
+
+- The original template will not automatically link your file to the website. 
+
+- You always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn't work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)
+
+- project:
+-   type: website
+-   output-dir: docs
+
+- website:
+-   title: "Your name - MUSA 5080 Portfolio"
+-   navbar:
+-     left:
+-       - href: index.qmd
+-         text: Home
+-       - text: Weekly Notes 
+-         menu:
+-           - href: weekly-notes/week-01-notes.qmd
+-             text: Week 1
+- format:
+-   html:
+-     theme: cosmo
+-     toc: true
+-     code-fold: true
+
+- execute:
+-   freeze: auto
+
+## Connections to Policy
+- [How this week's content applies to real policy work]
+
+## Reflection
+- [What was most interesting]
+- Always clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.
+- Use R Projects to organize your working directory.
+- You can render each quarto document separately, but before you push your website, use the terminal in R studio and type 'quarto render' to generate the whole website.
+
+##General workflow
+- Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits.
+- Making edits/creating new notes or labs
+- Update the quarto.yml file to make sure every file is clearly linked
+- Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website)
+- Commit all changes (after running Quarto render), push all the changes to the cloud
+

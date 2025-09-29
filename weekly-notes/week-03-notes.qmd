@@ -1,0 +1,56 @@
+---
+title: "Week 3 Notes - Data Visualization & Exploratory Analysis"
+date: "2025-09-25"
+---
+
+## Key Concepts Learned
+- Visualization in policy context 
+- ggplot2 fundamentals
+- EDA:Exploratory Data Analysis
+  
+## Coding Techniques
+- How to display the data (points, bars, lines)
+- ggplot(data = your_data) +   aes(x = variable1, y = variable2) +   geom_something() +   additional_layers()
+- x, y - position
+- color - point/line color
+- fill - area fill color
+- size - point/line size
+- shape - point shape
+- alpha - transparency
+
+## Questions & Challenges
+- Summary statistics can hide critical patterns
+- Outliers may represent important communities
+- Relationships aren’t always linear
+- Visual inspection reveals data quality issues
+
+## Connections to Policy
+- Importance of Visualization
+- Summary statistics alone (means, variances) can hide critical patterns.
+- Visualizations reveal geographic concentrations, demographic differences, temporal trends, and data-quality issues.
+- Policy Impact
+- Misleading charts—wrong scales, cherry-picked time periods, or hidden uncertainty—can lead to poor resource allocation and inequitable decisions.
+- Using ACS data requires ethical practice per the AICP Code of Ethics: always report margins of error, explain reliability (e.g., coefficient of variation), and test for statistical significance.
+- Practical Example
+- Mapping child poverty data can identify high-risk communities and guide targeted interventions.
+
+## Reflection
+- Professional Ethics
+- Transparent communication of uncertainty is a professional responsibility, not just a technical detail.
+- Small-population areas often have higher sampling error and must not be overlooked or misrepresented.
+- Key Takeaways
+- Approach data like a detective: explore, question, and verify before modeling.
+- Visualization is both a quality check and a storytelling tool.
+- Questions for Practice
+- How can I ensure my graphics are both accurate and accessible?
+- What annotations or explanations help non-experts understand data limitations?
+
+##General workflow
+- Load & Inspect – Check dimensions, variable types, and missing values.
+- Assess Reliability – Examine margins of error and compute coefficients of variation (CV).
+- Visualize Distributions – Use histograms and boxplots to see spread and detect outliers.
+- Explore Relationships – Create scatter plots, calculate correlations, and look for non-linear patterns.
+- Identify Patterns – Use grouping, clustering, and spatial analysis to detect geographic or demographic structures.
+- Question Anomalies – Investigate outliers to distinguish data errors from meaningful signals.
+- Document Limitations – Clearly communicate data sources, uncertainty, and caveats in reports and visuals.
+- Integrate Data – Use joins (e.g., left_join) to combine multiple datasets such as census and economic indicators, then re-check quality.
