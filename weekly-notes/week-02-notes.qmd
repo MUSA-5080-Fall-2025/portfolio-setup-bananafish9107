@@ -53,7 +53,7 @@ date: "2025-09-18"
 - Use R Projects to organize your working directory.
 - You can render each quarto document separately, but before you push your website, use the terminal in R studio and type 'quarto render' to generate the whole website.
 
-##General workflow
+## General workflow
 - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits.
 - Making edits/creating new notes or labs
 - Update the quarto.yml file to make sure every file is clearly linked

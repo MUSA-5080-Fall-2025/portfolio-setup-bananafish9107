@@ -45,7 +45,7 @@ date: "2025-09-25"
 - How can I ensure my graphics are both accurate and accessible?
 - What annotations or explanations help non-experts understand data limitations?
 
-##General workflow
+## General workflow
 - Load & Inspect – Check dimensions, variable types, and missing values.
 - Assess Reliability – Examine margins of error and compute coefficients of variation (CV).
 - Visualize Distributions – Use histograms and boxplots to see spread and detect outliers.

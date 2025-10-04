@@ -1,62 +1,80 @@
 ---
-title: "Week 2 Notes - Census Data"
-date: "2025-09-18"
+title: "Week 4 Notes - Spatial Data & GIS Operations in R"
+date: "2025-10-04"
 ---
 
 ## Key Concepts Learned
-- Repository(repo): folders containing project files 
-- Commit: snapshot work at a point
-  Push: send changes to the Github cloud 
-  Pull: get the latest changes from the Github cloud
-- Quarto: Publishing system into professional documents
+- Spatial Data Fundamentals
+- Vector data model and sf objects
+- Reading and inspecting spatial data
+- Basic spatial data operations
+- Spatial Operations
+- Spatial subsetting and filtering
+- Spatial joins and relationships
+- Measuring distances and areas
+
+- Geometry Operations
+- Buffers, intersections, and unions
+- Spatial aggregation
+- Coordinate Systems
+
+- Understanding projections
+- Transforming between coordinate systems
+
   
 ## Coding Techniques
-- Main Header
+- r predicate-structure # Basic structure: st_filter(data_to_filter, reference_geometry, .predicate = relationship)
+- “Which counties border Allegheny?” → st_touches
+- “Which tracts are IN Allegheny?” → st_within
+- “Which tracts overlap a metro area?” → st_intersects
+- st_contains()	→Completely contains	→“Districts containing hospitals”
+- st_overlaps() -Partial overlap	-“Overlapping service areas”
+- st_disjoint()	-No spatial relationship	-“Counties separate from urban areas”
+- To simply check current CRS →st_crs(pa_counties)
+- To set CRS (ONLY if missing) →pa_counties <- st_set_crs(pa_counties, 4326)
+- Transform to different CRS
+- Pennsylvania South State Plane (good for PA analysis)
+- →pa_counties_projected <- pa_counties %>%   st_transform(crs = 3365)
+- Transform to Albers Equal Area (good for area calculations) →pa_counties_albers <- pa_counties %>%   st_transform(crs = 5070) `
+
+Part 6: Putting It All Together
+Policy Analysis Workflow
+Typical spatial analysis steps:
+
+Load data → Get spatial boundaries and attribute data
+Check projections → Transform to appropriate CRS
+Join datasets → Combine spatial and non-spatial data
+Spatial operations → Buffers, intersections, distance calculations
+Aggregation → Summarize across spatial units
+Visualization → Maps and charts
+Interpretation → Policy recommendations
+
 
 
 ## Questions & Challenges
-- 4. Why do some of my pages show as not existing on 404? 
+- When to Transform
+Transform when:
+- Calculating areas or distances
+- Creating buffers
+- Doing geometric operations
+- Working with local/regional data
 
-- The original template will not automatically link your file to the website. 
-
-- You always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn't work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)
-
-- project:
--   type: website
--   output-dir: docs
-
-- website:
--   title: "Your name - MUSA 5080 Portfolio"
--   navbar:
--     left:
--       - href: index.qmd
--         text: Home
--       - text: Weekly Notes 
--         menu:
--           - href: weekly-notes/week-01-notes.qmd
--             text: Week 1
-- format:
--   html:
--     theme: cosmo
--     toc: true
--     code-fold: true
-
-- execute:
--   freeze: auto
 
 ## Connections to Policy
-- [How this week's content applies to real policy work]
+- Service Accessibility Zones (Buffer)
+- Environmental Impact Areas (Buffer)
+
 
 ## Reflection
-- [What was most interesting]
-- Always clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.
-- Use R Projects to organize your working directory.
-- You can render each quarto document separately, but before you push your website, use the terminal in R studio and type 'quarto render' to generate the whole website.
 
-##General workflow
-- Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits.
-- Making edits/creating new notes or labs
-- Update the quarto.yml file to make sure every file is clearly linked
-- Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website)
-- Commit all changes (after running Quarto render), push all the changes to the cloud
+
+## General workflow
+- 1.Load data → Get spatial boundaries and attribute data
+- 2.Check projections → Transform to appropriate CRS
+- 3.Join datasets → Combine spatial and non-spatial data
+- 4.Spatial operations → Buffers, intersections, distance calculations
+- 5.Aggregation → Summarize across spatial units
+- 6.Visualization → Maps and charts
+- 7.Interpretation → Policy recommendations
+- conclusion: st_crs() → st_set_crs() → st_transform()
 

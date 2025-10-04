@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-09-18">
+<meta name="dcterms.date" content="2025-10-04">
 
-<title>Week 2 Notes - Census Data – Yiming Cao - MUSA 5080 Portfolio</title>
+<title>Week 4 Notes - Spatial Data &amp; GIS Operations in R – Yiming Cao - MUSA 5080 Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -174,6 +174,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#questions-challenges" id="toc-questions-challenges" class="nav-link" data-scroll-target="#questions-challenges">Questions &amp; Challenges</a></li>
   <li><a href="#connections-to-policy" id="toc-connections-to-policy" class="nav-link" data-scroll-target="#connections-to-policy">Connections to Policy</a></li>
   <li><a href="#reflection" id="toc-reflection" class="nav-link" data-scroll-target="#reflection">Reflection</a></li>
+  <li><a href="#general-workflow" id="toc-general-workflow" class="nav-link" data-scroll-target="#general-workflow">General workflow</a></li>
   </ul>
 </nav>
     </div>
@@ -182,7 +183,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 2 Notes - Census Data</h1>
+<h1 class="title">Week 4 Notes - Spatial Data &amp; GIS Operations in R</h1>
 </div>
 
 
@@ -193,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 18, 2025</p>
+      <p class="date">October 4, 2025</p>
     </div>
   </div>
   
@@ -208,62 +209,74 @@ ul.task-list li input[type="checkbox"] {
 <section id="key-concepts-learned" class="level2">
 <h2 class="anchored" data-anchor-id="key-concepts-learned">Key Concepts Learned</h2>
 <ul>
-<li>Repository(repo): folders containing project files</li>
-<li>Commit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud</li>
-<li>Quarto: Publishing system into professional documents</li>
+<li><p>Spatial Data Fundamentals</p></li>
+<li><p>Vector data model and sf objects</p></li>
+<li><p>Reading and inspecting spatial data</p></li>
+<li><p>Basic spatial data operations</p></li>
+<li><p>Spatial Operations</p></li>
+<li><p>Spatial subsetting and filtering</p></li>
+<li><p>Spatial joins and relationships</p></li>
+<li><p>Measuring distances and areas</p></li>
+<li><p>Geometry Operations</p></li>
+<li><p>Buffers, intersections, and unions</p></li>
+<li><p>Spatial aggregation</p></li>
+<li><p>Coordinate Systems</p></li>
+<li><p>Understanding projections</p></li>
+<li><p>Transforming between coordinate systems</p></li>
 </ul>
 </section>
 <section id="coding-techniques" class="level2">
 <h2 class="anchored" data-anchor-id="coding-techniques">Coding Techniques</h2>
 <ul>
-<li>Main Header</li>
+<li>r predicate-structure # Basic structure: st_filter(data_to_filter, reference_geometry, .predicate = relationship)</li>
+<li>“Which counties border Allegheny?” → st_touches</li>
+<li>“Which tracts are IN Allegheny?” → st_within</li>
+<li>“Which tracts overlap a metro area?” → st_intersects</li>
+<li>st_contains() →Completely contains →“Districts containing hospitals”</li>
+<li>st_overlaps() -Partial overlap -“Overlapping service areas”</li>
+<li>st_disjoint() -No spatial relationship -“Counties separate from urban areas”</li>
+<li>To simply check current CRS →st_crs(pa_counties)</li>
+<li>To set CRS (ONLY if missing) →pa_counties &lt;- st_set_crs(pa_counties, 4326)</li>
+<li>Transform to different CRS</li>
+<li>Pennsylvania South State Plane (good for PA analysis)</li>
+<li>→pa_counties_projected &lt;- pa_counties %&gt;% st_transform(crs = 3365)</li>
+<li>Transform to Albers Equal Area (good for area calculations) →pa_counties_albers &lt;- pa_counties %&gt;% st_transform(crs = 5070) `</li>
 </ul>
+<p>Part 6: Putting It All Together Policy Analysis Workflow Typical spatial analysis steps:</p>
+<p>Load data → Get spatial boundaries and attribute data Check projections → Transform to appropriate CRS Join datasets → Combine spatial and non-spatial data Spatial operations → Buffers, intersections, distance calculations Aggregation → Summarize across spatial units Visualization → Maps and charts Interpretation → Policy recommendations</p>
 </section>
 <section id="questions-challenges" class="level2">
 <h2 class="anchored" data-anchor-id="questions-challenges">Questions &amp; Challenges</h2>
 <ul>
-<li><ol start="4" type="1">
-<li>Why do some of my pages show as not existing on 404?</li>
-</ol></li>
-<li><p>The original template will not automatically link your file to the website.</p></li>
-<li><p>You always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)</p></li>
-<li><p>project:</p></li>
-<li><p>type: website</p></li>
-<li><p>output-dir: docs</p></li>
-<li><p>website:</p></li>
-<li><p>title: “Your name - MUSA 5080 Portfolio”</p></li>
-<li><p>navbar:</p></li>
-<li><pre><code>left:</code></pre></li>
-<li><pre><code>  - href: index.qmd</code></pre></li>
-<li><pre><code>    text: Home</code></pre></li>
-<li><pre><code>  - text: Weekly Notes </code></pre></li>
-<li><pre><code>    menu:</code></pre></li>
-<li><pre><code>      - href: weekly-notes/week-01-notes.qmd</code></pre></li>
-<li><pre><code>        text: Week 1</code></pre></li>
-<li><p>format:</p></li>
-<li><p>html:</p></li>
-<li><pre><code>theme: cosmo</code></pre></li>
-<li><pre><code>toc: true</code></pre></li>
-<li><pre><code>code-fold: true</code></pre></li>
-<li><p>execute:</p></li>
-<li><p>freeze: auto</p></li>
+<li>When to Transform Transform when:</li>
+<li>Calculating areas or distances</li>
+<li>Creating buffers</li>
+<li>Doing geometric operations</li>
+<li>Working with local/regional data</li>
 </ul>
 </section>
 <section id="connections-to-policy" class="level2">
 <h2 class="anchored" data-anchor-id="connections-to-policy">Connections to Policy</h2>
 <ul>
-<li>[How this week’s content applies to real policy work]</li>
+<li>Service Accessibility Zones (Buffer)</li>
+<li>Environmental Impact Areas (Buffer)</li>
 </ul>
 </section>
 <section id="reflection" class="level2">
 <h2 class="anchored" data-anchor-id="reflection">Reflection</h2>
+</section>
+<section id="general-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="general-workflow">General workflow</h2>
 <ul>
-<li>[What was most interesting]</li>
-<li>Always clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.</li>
-<li>Use R Projects to organize your working directory.</li>
-<li>You can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.</li>
+<li>1.Load data → Get spatial boundaries and attribute data</li>
+<li>2.Check projections → Transform to appropriate CRS</li>
+<li>3.Join datasets → Combine spatial and non-spatial data</li>
+<li>4.Spatial operations → Buffers, intersections, distance calculations</li>
+<li>5.Aggregation → Summarize across spatial units</li>
+<li>6.Visualization → Maps and charts</li>
+<li>7.Interpretation → Policy recommendations</li>
+<li>conclusion: st_crs() → st_set_crs() → st_transform()</li>
 </ul>
-<p>##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud</p>
 
 
 </section>

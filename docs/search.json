@@ -86,44 +86,51 @@
   {
     "objectID": "weekly-notes/week-04-notes.html",
     "href": "weekly-notes/week-04-notes.html",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "",
-    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+    "text": "Spatial Data Fundamentals\nVector data model and sf objects\nReading and inspecting spatial data\nBasic spatial data operations\nSpatial Operations\nSpatial subsetting and filtering\nSpatial joins and relationships\nMeasuring distances and areas\nGeometry Operations\nBuffers, intersections, and unions\nSpatial aggregation\nCoordinate Systems\nUnderstanding projections\nTransforming between coordinate systems"
   },
   {
     "objectID": "weekly-notes/week-04-notes.html#key-concepts-learned",
     "href": "weekly-notes/week-04-notes.html#key-concepts-learned",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "",
-    "text": "Repository(repo): folders containing project files\nCommit: snapshot work at a point Push: send changes to the Github cloud Pull: get the latest changes from the Github cloud\nQuarto: Publishing system into professional documents"
+    "text": "Spatial Data Fundamentals\nVector data model and sf objects\nReading and inspecting spatial data\nBasic spatial data operations\nSpatial Operations\nSpatial subsetting and filtering\nSpatial joins and relationships\nMeasuring distances and areas\nGeometry Operations\nBuffers, intersections, and unions\nSpatial aggregation\nCoordinate Systems\nUnderstanding projections\nTransforming between coordinate systems"
   },
   {
     "objectID": "weekly-notes/week-04-notes.html#coding-techniques",
     "href": "weekly-notes/week-04-notes.html#coding-techniques",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "Coding Techniques",
-    "text": "Coding Techniques\n\nMain Header"
+    "text": "Coding Techniques\n\nr predicate-structure # Basic structure: st_filter(data_to_filter, reference_geometry, .predicate = relationship)\n“Which counties border Allegheny?” → st_touches\n“Which tracts are IN Allegheny?” → st_within\n“Which tracts overlap a metro area?” → st_intersects\nst_contains() →Completely contains →“Districts containing hospitals”\nst_overlaps() -Partial overlap -“Overlapping service areas”\nst_disjoint() -No spatial relationship -“Counties separate from urban areas”\nTo simply check current CRS →st_crs(pa_counties)\nTo set CRS (ONLY if missing) →pa_counties &lt;- st_set_crs(pa_counties, 4326)\nTransform to different CRS\nPennsylvania South State Plane (good for PA analysis)\n→pa_counties_projected &lt;- pa_counties %&gt;% st_transform(crs = 3365)\nTransform to Albers Equal Area (good for area calculations) →pa_counties_albers &lt;- pa_counties %&gt;% st_transform(crs = 5070) `\n\nPart 6: Putting It All Together Policy Analysis Workflow Typical spatial analysis steps:\nLoad data → Get spatial boundaries and attribute data Check projections → Transform to appropriate CRS Join datasets → Combine spatial and non-spatial data Spatial operations → Buffers, intersections, distance calculations Aggregation → Summarize across spatial units Visualization → Maps and charts Interpretation → Policy recommendations"
   },
   {
     "objectID": "weekly-notes/week-04-notes.html#questions-challenges",
     "href": "weekly-notes/week-04-notes.html#questions-challenges",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "Questions & Challenges",
-    "text": "Questions & Challenges\n\n\nWhy do some of my pages show as not existing on 404?\n\nThe original template will not automatically link your file to the website.\nYou always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn’t work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)\nproject:\ntype: website\noutput-dir: docs\nwebsite:\ntitle: “Your name - MUSA 5080 Portfolio”\nnavbar:\nleft:\n  - href: index.qmd\n    text: Home\n  - text: Weekly Notes \n    menu:\n      - href: weekly-notes/week-01-notes.qmd\n        text: Week 1\nformat:\nhtml:\ntheme: cosmo\ntoc: true\ncode-fold: true\nexecute:\nfreeze: auto"
+    "text": "Questions & Challenges\n\nWhen to Transform Transform when:\nCalculating areas or distances\nCreating buffers\nDoing geometric operations\nWorking with local/regional data"
   },
   {
     "objectID": "weekly-notes/week-04-notes.html#connections-to-policy",
     "href": "weekly-notes/week-04-notes.html#connections-to-policy",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "Connections to Policy",
-    "text": "Connections to Policy\n\n[How this week’s content applies to real policy work]"
+    "text": "Connections to Policy\n\nService Accessibility Zones (Buffer)\nEnvironmental Impact Areas (Buffer)"
   },
   {
     "objectID": "weekly-notes/week-04-notes.html#reflection",
     "href": "weekly-notes/week-04-notes.html#reflection",
-    "title": "Week 2 Notes - Census Data",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
     "section": "Reflection",
-    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+    "text": "Reflection"
+  },
+  {
+    "objectID": "weekly-notes/week-04-notes.html#general-workflow",
+    "href": "weekly-notes/week-04-notes.html#general-workflow",
+    "title": "Week 4 Notes - Spatial Data & GIS Operations in R",
+    "section": "General workflow",
+    "text": "General workflow\n\n1.Load data → Get spatial boundaries and attribute data\n2.Check projections → Transform to appropriate CRS\n3.Join datasets → Combine spatial and non-spatial data\n4.Spatial operations → Buffers, intersections, distance calculations\n5.Aggregation → Summarize across spatial units\n6.Visualization → Maps and charts\n7.Interpretation → Policy recommendations\nconclusion: st_crs() → st_set_crs() → st_transform()"
   },
   {
     "objectID": "weekly-notes/week-02-notes.html",
@@ -165,7 +172,14 @@
     "href": "weekly-notes/week-02-notes.html#reflection",
     "title": "Week 2 Notes - Census Data",
     "section": "Reflection",
-    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website.\n\n##General workflow - Make sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits. - Making edits/creating new notes or labs - Update the quarto.yml file to make sure every file is clearly linked - Run quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website) - Commit all changes (after running Quarto render), push all the changes to the cloud"
+    "text": "Reflection\n\n[What was most interesting]\nAlways clone the github repo locally on your computer (in R studio), work on the files on your local computer and when ready, push those changes to GitHub.\nUse R Projects to organize your working directory.\nYou can render each quarto document separately, but before you push your website, use the terminal in R studio and type ‘quarto render’ to generate the whole website."
+  },
+  {
+    "objectID": "weekly-notes/week-02-notes.html#general-workflow",
+    "href": "weekly-notes/week-02-notes.html#general-workflow",
+    "title": "Week 2 Notes - Census Data",
+    "section": "General workflow",
+    "text": "General workflow\n\nMake sure your repo on your desktop is up to date with the cloud (GitHub). Before making changes, please pull changes first through GitHub Desktop before making any edits.\nMaking edits/creating new notes or labs\nUpdate the quarto.yml file to make sure every file is clearly linked\nRun quarto render (every time you make changes, unless you run this one, any changes will not be reflected on your website)\nCommit all changes (after running Quarto render), push all the changes to the cloud"
   },
   {
     "objectID": "labs/lab_1/assignment1_template.html",
@@ -669,7 +683,14 @@
     "href": "weekly-notes/week-03-notes.html#reflection",
     "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
     "section": "Reflection",
-    "text": "Reflection\n\nProfessional Ethics\nTransparent communication of uncertainty is a professional responsibility, not just a technical detail.\nSmall-population areas often have higher sampling error and must not be overlooked or misrepresented.\nKey Takeaways\nApproach data like a detective: explore, question, and verify before modeling.\nVisualization is both a quality check and a storytelling tool.\nQuestions for Practice\nHow can I ensure my graphics are both accurate and accessible?\nWhat annotations or explanations help non-experts understand data limitations?\n\n##General workflow - Load & Inspect – Check dimensions, variable types, and missing values. - Assess Reliability – Examine margins of error and compute coefficients of variation (CV). - Visualize Distributions – Use histograms and boxplots to see spread and detect outliers. - Explore Relationships – Create scatter plots, calculate correlations, and look for non-linear patterns. - Identify Patterns – Use grouping, clustering, and spatial analysis to detect geographic or demographic structures. - Question Anomalies – Investigate outliers to distinguish data errors from meaningful signals. - Document Limitations – Clearly communicate data sources, uncertainty, and caveats in reports and visuals. - Integrate Data – Use joins (e.g., left_join) to combine multiple datasets such as census and economic indicators, then re-check quality."
+    "text": "Reflection\n\nProfessional Ethics\nTransparent communication of uncertainty is a professional responsibility, not just a technical detail.\nSmall-population areas often have higher sampling error and must not be overlooked or misrepresented.\nKey Takeaways\nApproach data like a detective: explore, question, and verify before modeling.\nVisualization is both a quality check and a storytelling tool.\nQuestions for Practice\nHow can I ensure my graphics are both accurate and accessible?\nWhat annotations or explanations help non-experts understand data limitations?"
+  },
+  {
+    "objectID": "weekly-notes/week-03-notes.html#general-workflow",
+    "href": "weekly-notes/week-03-notes.html#general-workflow",
+    "title": "Week 3 Notes - Data Visualization & Exploratory Analysis",
+    "section": "General workflow",
+    "text": "General workflow\n\nLoad & Inspect – Check dimensions, variable types, and missing values.\nAssess Reliability – Examine margins of error and compute coefficients of variation (CV).\nVisualize Distributions – Use histograms and boxplots to see spread and detect outliers.\nExplore Relationships – Create scatter plots, calculate correlations, and look for non-linear patterns.\nIdentify Patterns – Use grouping, clustering, and spatial analysis to detect geographic or demographic structures.\nQuestion Anomalies – Investigate outliers to distinguish data errors from meaningful signals.\nDocument Limitations – Clearly communicate data sources, uncertainty, and caveats in reports and visuals.\nIntegrate Data – Use joins (e.g., left_join) to combine multiple datasets such as census and economic indicators, then re-check quality."
   },
   {
     "objectID": "weekly-notes/week-05-notes.html",
