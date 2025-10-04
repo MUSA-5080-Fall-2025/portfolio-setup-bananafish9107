@@ -12,12 +12,10 @@ date: "2025-10-04"
 - Spatial subsetting and filtering
 - Spatial joins and relationships
 - Measuring distances and areas
-
 - Geometry Operations
 - Buffers, intersections, and unions
 - Spatial aggregation
 - Coordinate Systems
-
 - Understanding projections
 - Transforming between coordinate systems
 
@@ -37,8 +35,7 @@ date: "2025-10-04"
 - →pa_counties_projected <- pa_counties %>%   st_transform(crs = 3365)
 - Transform to Albers Equal Area (good for area calculations) →pa_counties_albers <- pa_counties %>%   st_transform(crs = 5070) `
 
-Part 6: Putting It All Together
-Policy Analysis Workflow
+
 Typical spatial analysis steps:
 
 Load data → Get spatial boundaries and attribute data
