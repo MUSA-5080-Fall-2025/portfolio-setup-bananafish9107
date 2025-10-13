@@ -1,14 +1,14 @@
 ---
-title: "Week 2 Notes - Census Data"
-date: "2025-09-18"
+title: "Week 5 Notes - Introduction to Linear Regression"
+date: "2025-10-12"
 ---
 
 ## Key Concepts Learned
-- Repository(repo): folders containing project files 
-- Commit: snapshot work at a point
-  Push: send changes to the Github cloud 
-  Pull: get the latest changes from the Github cloud
-- Quarto: Publishing system into professional documents
+- Understanding relationships vs Making predictions
+- Building your first model with PA census data
+- Model evaluation: How do we know if it’s any good?
+- Checking assumptions: When can we trust the model?
+- Improving predictions: Transformations, multiple variables
   
 ## Coding Techniques
 - Main Header
