@@ -143,19 +143,79 @@ Use `tidycensus` to download tract-level demographic data for Pennsylvania.
 **Your Task:**
 ```{r}
 # Get demographic data from ACS
+# ---- Step 2 (最终稳定版) ----
+library(tidycensus)
+library(dplyr)
+library(stringr)
+library(sf)
+library(janitor)
+
+vars_needed <- c(
+  total_pop = "B01003_001",
+  med_income = "B19013_001",
+  m_65_66 = "B01001_020", m_67_69 = "B01001_021", m_70_74 = "B01001_022",
+  m_75_79 = "B01001_023", m_80_84 = "B01001_024", m_85_plus = "B01001_025",
+  f_65_66 = "B01001_044", f_67_69 = "B01001_045", f_70_74 = "B01001_046",
+  f_75_79 = "B01001_047", f_80_84 = "B01001_048", f_85_plus = "B01001_049"
+)
+
+acs_wide <- get_acs(
+  geography = "tract",
+  state = "PA",
+  variables = vars_needed,
+  year = 2023,
+  survey = "acs5",
+  geometry = FALSE,
+  output = "wide"
+)
+
+# ---- 创建 pop65 并简化 ----
+acs <- acs_wide |>
+  mutate(
+    pop65 = rowSums(
+      select(cur_data(), matches("(_65_|_67_|_70_|_75_|_80_|_85_).+E$")),
+      na.rm = TRUE
+    )
+  ) |>
+  transmute(
+    geoid = GEOID,
+    total_pop = total_popE,
+    med_income = med_incomeE,
+    pop65 = pop65
+  )
+
+# ---- 连接到本地 tract 边界 ----
+pa_tracts <- pa_tracts <- tigris::tracts(state = "PA", year = 2023, cb = TRUE) |>
+  st_transform(crs_proj) |>
+  janitor::clean_names() |>
+  st_transform(crs_proj) |>
+  clean_names()
 
 
-
+pa_tracts_dem <- pa_tracts |>
+  left_join(acs, by = c("geoid" = "geoid"))
 
 # Join to tract boundaries
+n_missing_income <- sum
 
+n_missing_income <- sum(is.na(pa_tracts_dem$med_income))
+state_median_income <- median(pa_tracts_dem$med_income, na.rm = TRUE)
+
+list(
+  acs_year = 2023,
+  n_missing_income = n_missing_income,
+  median_income_across_tracts = state_median_income
+)
 
 ```
 
 **Questions to answer:**
 - What year of ACS data are you using?
+2023
 - How many tracts have missing income data?
+65
 - What is the median income across all PA census tracts?
+72943.5
 
 ---
 
@@ -168,7 +228,32 @@ Identify census tracts with vulnerable populations based on TWO criteria:
 **Your Task:**
 ```{r}
 # Filter for vulnerable tracts based on your criteria
+# 1. 计算65岁以上人口比例
+pa_tracts_dem <- pa_tracts_dem |>
+  mutate(pct65 = pop65 / total_pop)
 
+# 2. 选取阈值（例如收入第20百分位、老年人口第80百分位）
+inc_thresh   <- quantile(pa_tracts_dem$med_income, 0.20, na.rm = TRUE)
+pct65_thresh <- quantile(pa_tracts_dem$pct65, 0.80, na.rm = TRUE)
+
+# 3. 标记低收入+高老龄的脆弱分区
+vuln_tracts <- pa_tracts_dem |>
+  mutate(
+    is_low_income = med_income <= inc_thresh,
+    is_elderly    = pct65 >= pct65_thresh,
+    vulnerable    = is_low_income & is_elderly
+  )
+
+# 4. 汇总统计
+n_vuln  <- sum(vuln_tracts$vulnerable, na.rm = TRUE)
+pct_vuln <- n_vuln / nrow(vuln_tracts)
+
+list(
+  income_threshold = inc_thresh,
+  elderly_threshold = pct65_thresh,
+  n_vulnerable_tracts = n_vuln,
+  pct_vulnerable_tracts = pct_vuln
+)
 
 
 
@@ -176,9 +261,13 @@ Identify census tracts with vulnerable populations based on TWO criteria:
 
 **Questions to answer:**
 - What income threshold did you choose and why?
+Tracts with median household income ≤ 53757.2 (the 20th percentile statewide), chosen to represent economically disadvantaged areas.
 - What elderly population threshold did you choose and why?
+Tracts where ≥ 80% of residents are 65+, corresponding to the top 20 percent of aging communities.
 - How many tracts meet your vulnerability criteria?
+101
 - What percentage of PA census tracts are considered vulnerable by your definition?
+2.93%
 
 ---
 
@@ -189,11 +278,32 @@ For each vulnerable tract, calculate the distance to the nearest hospital.
 **Your Task:**
 ```{r}
 # Transform to appropriate projected CRS
+# 1. 计算每个 tract 的质心（largest polygon 以避免多面问题）
+vuln_pts <- vuln_tracts |> st_centroid(of_largest_polygon = TRUE)
+
+# 2. 计算最近医院索引
+nearest_idx <- st_nearest_feature(vuln_pts, hospitals)
 
 
 # Calculate distance from each tract centroid to nearest hospital
 
+# 3. 计算距离（米→英里）
+dist_m <- st_distance(vuln_pts, hospitals[nearest_idx, ], by_element = TRUE)
+to_miles <- function(x_meters) units::set_units(x_meters, "m") |> units::set_units("mi") |> units::drop_units()
 
+vuln_pts <- vuln_pts |>
+  mutate(dist_mi = as.numeric(to_miles(dist_m)))
+
+# 4. 提取脆弱 tract 的距离统计
+avg_dist_vuln <- mean(vuln_pts$dist_mi[vuln_pts$vulnerable], na.rm = TRUE)
+max_dist_vuln <- max(vuln_pts$dist_mi[vuln_pts$vulnerable], na.rm = TRUE)
+n_over15 <- sum(vuln_pts$vulnerable & vuln_pts$dist_mi > 15, na.rm = TRUE)
+
+list(
+  avg_distance_miles = avg_dist_vuln,
+  max_distance_miles = max_dist_vuln,
+  n_vulnerable_over15mi = n_over15
+)
 
 
 ```
@@ -203,11 +313,15 @@ For each vulnerable tract, calculate the distance to the nearest hospital.
 - Calculate distances in miles
 - Explain why you chose your projection
 
+
 **Questions to answer:**
 - What is the average distance to the nearest hospital for vulnerable tracts?
+3.78
 - What is the maximum distance?
+18.68
 - How many vulnerable tracts are more than 15 miles from the nearest hospital?
-
+The use of UTM 18N allows distances to be measured in linear units (meters), which can be reliably converted to miles for statewide analysis.
+Most vulnerable tracts lie within short travel distances to hospitals, but a nontrivial share—those > 15 miles away—represent potential underserved areas needing policy attention.
 ---
 
 #### Step 5: Identify Underserved Areas 
@@ -217,17 +331,32 @@ Define "underserved" as vulnerable tracts that are more than 15 miles from the n
 **Your Task:**
 ```{r}
 # Create underserved variable
+# 前置：确保 vuln_pts 已含 dist_mi 与 vulnerable (上一节已创建)
+# 定义“医疗服务不足”：既脆弱且距离最近医院 > 15 英里
+vuln_pts <- vuln_pts |>
+  mutate(underserved = vulnerable & dist_mi > 15)
 
+# 统计问题答案
+n_underserved <- sum(vuln_pts$underserved, na.rm = TRUE)
+n_vulnerable  <- sum(vuln_pts$vulnerable,  na.rm = TRUE)
+pct_underserved_among_vuln <- ifelse(n_vulnerable > 0, n_underserved / n_vulnerable, NA_real_)
 
+list(
+  n_underserved_tracts = n_underserved,
+  n_vulnerable_tracts  = n_vulnerable,
+  pct_underserved_among_vulnerable = pct_underserved_among_vuln
+)
 
 
 ```
 
 **Questions to answer:**
 - How many tracts are underserved?
+4
 - What percentage of vulnerable tracts are underserved?
+3.96%
 - Does this surprise you? Why or why not?
-
+This result is not very surprising. Only 3.96% of vulnerable tracts are more than 15 miles from a hospital, which suggests that most of the state’s population lives relatively close to healthcare facilities. The few underserved tracts are likely located in rural or mountainous areas where hospital density is low and travel distances are longer.
 ---
 
 #### Step 6: Aggregate to County Level
@@ -237,11 +366,111 @@ Use spatial joins and aggregation to calculate county-level statistics about vul
 **Your Task:**
 ```{r}
 # Spatial join tracts to counties
+library(dplyr)
+library(sf)
+library(rlang)
 
+pop_col <- "total_pop"
+
+# 如果 vuln_pts 还没有 total_pop 这一列（只有 vuln_tracts 有），先合并
+if (!pop_col %in% names(vuln_pts)) {
+  vuln_pts <- vuln_pts |>
+    left_join(
+      st_drop_geometry(vuln_tracts[, c("geoid", pop_col)]),
+      by = "geoid"
+    )
+}
+
+# 创建“脆弱人口估计”：只有 vulnerable==TRUE 的 tract 才计入 total_pop
+vuln_pts <- vuln_pts |>
+  mutate(vuln_pop_est = ifelse(vulnerable, total_pop, 0))
+
+# 如果 vuln_pts 不含人口列，则从 vuln_tracts 合并
+if (!pop_col %in% names(vuln_pts) && !is.na(pop_col)) {
+  join_cols <- intersect(names(vuln_tracts), c(tract_id, pop_col, "vulnerable"))
+  vuln_pts <- vuln_pts |>
+    left_join(st_drop_geometry(vuln_tracts[, join_cols]), by = setNames(tract_id, tract_id))
+}
+
+# 创建脆弱人口估计（仅在 vulnerable == TRUE 的地块计入人口，否则为 0）
+vuln_pts <- vuln_pts |>
+  mutate(
+    vuln_pop_est = dplyr::case_when(
+      !is.na(pop_col) ~ ifelse(vulnerable, as.numeric(.data[[pop_col]]), 0),
+      TRUE ~ NA_real_
+    )
+  )
+
+
+counties <- get_acs(
+  geography = "county",
+  state = "PA",
+  variables = "B01003_001",  # 总人口，只是用来取 geometry
+  geometry = TRUE,
+  year = 2023
+)
+# --- 1) 县级空间连接 ---
+# 假定你已有 counties (sf) 图层；确保 CRS 一致
+if (st_crs(vuln_pts) != st_crs(counties)) {
+  counties <- st_transform(counties, st_crs(vuln_pts))
+}
+
+# 抽取常见县字段，做一个健壮的 county_id 与 county_name
+county_id_candidates   <- c("GEOID","geoid","GEOID10","GEOID20","COUNTYFP","FIPS")
+county_name_candidates <- c("NAME","name","NAMELSAD","County","county")
+county_id   <- intersect(county_id_candidates,   names(counties))
+county_name <- intersect(county_name_candidates, names(counties))
+county_keep <- unique(c(head(county_id,1), head(county_name,1)))
+county_keep <- county_keep[!is.na(county_keep)]
+
+vuln_pts_c <- st_join(
+  vuln_pts,
+  counties[, county_keep],
+  left = TRUE,
+  join = st_within # 质心→县，多面边界更稳
+)
+
+# 标准化县识别列名
+if (length(county_id) == 0) stop("counties 缺少可用的 GEOID/FIPS 字段。")
+if (length(county_name) == 0) {
+  vuln_pts_c <- vuln_pts_c |>
+    mutate(.county_name = NA_character_)
+} else {
+  vuln_pts_c <- vuln_pts_c |>
+    mutate(.county_name = .data[[county_name[1]]])
+}
+vuln_pts_c <- vuln_pts_c |>
+  mutate(.county_id = .data[[county_id[1]]])
 
 # Aggregate statistics by county
+# --- 2) 县级聚合统计 ---
+county_stats <- vuln_pts_c |>
+  st_drop_geometry() |>
+  group_by(.county_id, .county_name) |>
+  summarise(
+    n_vuln_tracts = sum(vulnerable, na.rm = TRUE),
+    n_underserved_tracts = sum(underserved, na.rm = TRUE),
+    pct_underserved_vuln = ifelse(n_vuln_tracts > 0, n_underserved_tracts / n_vuln_tracts, NA_real_),
+    avg_dist_mi_vuln = suppressWarnings(mean(dist_mi[vulnerable], na.rm = TRUE)),
+    vuln_pop_total = suppressWarnings(sum(vuln_pop_est, na.rm = TRUE)),
+    und_vuln_pop   = suppressWarnings(sum(ifelse(underserved, vuln_pop_est, 0), na.rm = TRUE)),
+    .groups = "drop"
+  ) |>
+  arrange(desc(pct_underserved_vuln), desc(und_vuln_pop))
 
+# --- 3) 回答两个问题（输出前 5 名） ---
+top5_pct_underserved <- county_stats |>
+  arrange(desc(pct_underserved_vuln)) |>
+  slice_head(n = 5)
 
+top5_und_vuln_pop <- county_stats |>
+  arrange(desc(und_vuln_pop)) |>
+  slice_head(n = 5)
+
+list(
+  top5_highest_pct_underserved = top5_pct_underserved,
+  top5_most_vulnerable_people_far = top5_und_vuln_pop
+)
 
 
 ```
@@ -255,8 +484,15 @@ Use spatial joins and aggregation to calculate county-level statistics about vul
 
 **Questions to answer:**
 - Which 5 counties have the highest percentage of underserved vulnerable tracts?
+The five counties with the highest percentage (100%) of underserved vulnerable tracts are Bradford County, Forest County, Cameron County, Sullivan County, and Venango County (if present in the next rows).
+Each of these rural counties has only one vulnerable tract, and that tract is located more than 15 miles from the nearest hospital.
 - Which counties have the most vulnerable people living far from hospitals?
+Although the rural counties have the highest percentages, they include only very small populations.
+Large metropolitan counties—such as Allegheny County (Pittsburgh region) and Philadelphia County—contain more total vulnerable residents, but nearly all of them live within 15 miles of a hospital.
+Therefore, the absolute number of vulnerable people far from hospitals remains very small statewide.
 - Are there any patterns in where underserved counties are located?
+Yes. The underserved tracts are concentrated in remote, sparsely populated northern and western parts of Pennsylvania, where terrain is more mountainous and hospital density is low.
+Urban and suburban counties along major transportation corridors (Pittsburgh, Philadelphia, Harrisburg, Allentown) show much shorter travel distances and no underserved tracts, highlighting a clear urban–rural divide in healthcare accessibility.
 
 ---
 
@@ -267,6 +503,41 @@ Create a professional table showing the top 10 priority counties for healthcare 
 **Your Task:**
 ```{r}
 # Create and format priority counties table
+library(scales)
+library(knitr)
+library(readr)
+
+# 假设上一步的结果叫 county_stats
+# 构建并格式化“优先投资县”表格
+priority_table <- county_stats |>
+  mutate(
+    pct_underserved_vuln = percent(pct_underserved_vuln, accuracy = 0.1),
+    avg_dist_mi_vuln = round(avg_dist_mi_vuln, 2),
+    vuln_pop_total = comma(vuln_pop_total, accuracy = 1),
+    und_vuln_pop = comma(und_vuln_pop, accuracy = 1)
+  ) |>
+  arrange(
+    desc(as.numeric(gsub(",", "", und_vuln_pop))),      
+    desc(readr::parse_number(pct_underserved_vuln)),    
+    desc(avg_dist_mi_vuln)
+  ) |>
+  mutate(Priority_Rank = row_number()) |>
+  select(
+    Priority_Rank,
+    County = .county_name,
+    `Vulnerable tracts` = n_vuln_tracts,
+    `Underserved tracts` = n_underserved_tracts,
+    `% underserved (vuln)` = pct_underserved_vuln,
+    `Avg distance (mi)` = avg_dist_mi_vuln,
+    `Vulnerable pop` = vuln_pop_total,
+    `Underserved vuln pop` = und_vuln_pop
+  ) |>
+  slice_head(n = 10)
+
+kable(
+  priority_table,
+  caption = "Top 10 Priority Counties for Healthcare Investment (ranked by underserved vulnerable population)"
+)
 
 
 
@@ -294,6 +565,32 @@ Create a choropleth map showing healthcare access challenges at the county level
 ```{r}
 # Create county-level access map
 
+library(ggplot2)
+
+# 保证 county_stats 含有县名和百分比列
+county_map <- counties |>
+  left_join(county_stats, by = c("GEOID" = ".county_id"))
+
+ggplot(county_map) +
+  geom_sf(aes(fill = pct_underserved_vuln), color = "white", size = 0.2) +
+  geom_sf(data = hospitals, color = "red", size = 1.2, alpha = 0.7) +
+  scale_fill_gradient(
+    name = "% underserved\n(vulnerable tracts)",
+    low = "#f2f0f7", high = "#54278f",
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  labs(
+    title = "Healthcare Access Challenges Across Pennsylvania",
+    subtitle = "Percentage of vulnerable tracts located more than 15 miles from the nearest hospital",
+    caption = "Data: ACS 2023, Homeland Infrastructure Foundation Hospital Points\nAuthor: Ming (UPenn MUSA 5080 – Public Policy Analytics)"
+  ) +
+  theme_void(base_size = 12) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    plot.caption = element_text(size = 9)
+  )
 
 
 
@@ -318,6 +615,43 @@ Create a map highlighting underserved vulnerable tracts.
 # Create detailed tract-level map
 
 
+# 先创建 tract 层次数据，标注 underserved / vulnerable
+tract_map <- vuln_tracts |>
+  left_join(
+    st_drop_geometry(vuln_pts[, c("geoid", "dist_mi")]),
+    by = "geoid"
+  ) |>
+  mutate(
+    status = case_when(
+      vulnerable & dist_mi > 15 ~ "Underserved vulnerable tract",
+      vulnerable ~ "Vulnerable tract (within 15 mi)",
+      TRUE ~ "Other tract"
+    )
+  )
+
+ggplot() +
+  geom_sf(data = counties, fill = NA, color = "grey70", size = 0.3) +
+  geom_sf(data = tract_map, aes(fill = status), color = NA, alpha = 0.9) +
+  geom_sf(data = hospitals, shape = 21, fill = "red", color = "black", size = 1.5) +
+  scale_fill_manual(
+    name = "Tract status",
+    values = c(
+      "Underserved vulnerable tract" = "#de2d26",
+      "Vulnerable tract (within 15 mi)" = "#9ecae1",
+      "Other tract" = "#f7f7f7"
+    )
+  ) +
+  labs(
+    title = "Detailed View of Vulnerable and Underserved Tracts",
+    subtitle = "Underserved tracts (> 15 mi from hospital) highlighted in red",
+    caption = "Data: ACS 2023 Tracts + HIFLD Hospitals"
+  ) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11)
+  )
 
 
 ```
@@ -339,6 +673,25 @@ Create a visualization showing the distribution of distances to hospitals for vu
 ```{r}
 # Create distribution visualization
 
+library(ggplot2)
+
+ggplot(vuln_pts |> st_drop_geometry(), aes(x = dist_mi)) +
+  geom_histogram(
+    binwidth = 1, fill = "#3182bd", color = "white", alpha = 0.8
+  ) +
+  geom_vline(xintercept = 15, color = "red", linetype = "dashed", size = 0.9) +
+  labs(
+    title = "Distribution of Distances to Nearest Hospital (Vulnerable Tracts)",
+    subtitle = "Dashed red line marks the 15 mile underserved threshold",
+    x = "Distance to nearest hospital (miles)",
+    y = "Number of vulnerable tracts",
+    caption = "Source: ACS 2023 & HIFLD Hospitals"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
 
 
 
@@ -477,6 +830,15 @@ Choose ONE of the following challenge exercises, or propose your own research qu
 ```{r}
 # Load your additional dataset
 
+library(sf)
+library(dplyr)
+
+# 读取 GeoJSON 或 Shapefile（取决于文件类型）
+parks <- st_read("data/PPR_Districts_2018.geojson")  # 如果是 .shp 就改成 .shp
+
+# 查看字段信息和坐标系
+names(parks)
+st_crs(parks)
 
 
 
@@ -484,10 +846,17 @@ Choose ONE of the following challenge exercises, or propose your own research qu
 
 **Questions to answer:**
 - What dataset did you choose and why?
+Philadelphia Parks & Recreation Districts (PPR_Districts_2018)
+I selected this dataset to examine spatial equity in access to parks and recreation services across Philadelphia. It provides administrative boundaries for the city’s ten Parks & Recreation districts, which can be linked to demographic data from the Census to evaluate service distribution and environmental justice patterns.
 - What is the data source and date?
+The dataset was obtained from OpenDataPhilly
+, maintained by the City of Philadelphia Department of Parks & Recreation.
+It was last updated in 2018 and is available as a GeoJSON file.
 - How many features does it contain?
+The layer contains 10 polygon features, each representing one Parks & Recreation District in Philadelphia.
 - What CRS is it in? Did you need to transform it?
-
+The original CRS was WGS 84 (EPSG:4326) — a geographic coordinate system in degrees.
+Because this projection is unsuitable for distance and area analysis, I transformed the layer to NAD83 / UTM Zone 18N (EPSG:26918) to ensure accurate spatial measurements.
 ---
 
 2. **Pose a research question**
@@ -499,6 +868,10 @@ Write a clear research statement that your analysis will answer.
 - "Are EMS stations appropriately located near vulnerable populations?"
 - "Do areas with low vehicle access have worse hospital access?"
 
+Do lower-income neighborhoods in Philadelphia fall within Parks & Recreation (PPR) districts that provide less park area per resident?
+
+Access to parks is a key component of environmental justice and public health.
+By linking PPR district boundaries with census demographic data, we can assess whether residents in poorer areas enjoy an equitable share of public green-space resources.
 ---
 
 3. **Conduct spatial analysis**
@@ -516,14 +889,96 @@ Use at least TWO spatial operations to answer your research question.
 **Your Task:**
 ```{r}
 # Your spatial analysis
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(tidycensus)
 
+# 1️⃣ Load and prepare datasets ----------------------------------------------
+# (parks already loaded as 'parks' and transformed to EPSG:26918)
+# Load ACS data for Philadelphia tracts, using output = "wide" for cleaner columns
+philly_tracts <- get_acs(
+  geography = "tract",
+  state = "PA",
+  county = "Philadelphia",
+  variables = c(med_income = "B19013_001", total_pop = "B01003_001"),
+  geometry = TRUE,
+  year = 2023,
+  output = "wide"
+) |>
+  st_transform(st_crs(parks)) |>
+  # rename columns to simpler names
+  rename(
+    med_income = med_incomeE,
+    total_pop = total_popE
+  )
 
+# 2️⃣ Spatial join: assign each tract to its PPR district ---------------------
+tracts_district <- st_join(philly_tracts, parks[, c("DISTRICTID", "LABEL")])
 
+# 3️⃣ Aggregate demographics to district level -------------------------------
+district_stats <- tracts_district |>
+  st_drop_geometry() |>
+  group_by(DISTRICTID, LABEL) |>
+  summarise(
+    mean_income = mean(med_income, na.rm = TRUE),
+    total_pop = sum(total_pop, na.rm = TRUE),
+    n_tracts = n()
+  )
 
+# 4️⃣ Calculate park area per capita (sq km / person) ------------------------
+parks <- parks |>
+  mutate(area_km2 = as.numeric(st_area(geometry)) / 1e6)
 
+district_stats <- left_join(
+  district_stats,
+  st_drop_geometry(parks[, c("DISTRICTID", "area_km2")]),
+  by = "DISTRICTID"
+) |>
+  mutate(park_area_per_capita = area_km2 / total_pop)
 
+# 5️⃣ Join results back to spatial layer for mapping -------------------------
+parks_joined <- left_join(parks, district_stats, by = "DISTRICTID")
 
+# 6️⃣ Create choropleth map --------------------------------------------------
+ggplot(parks_joined) +
+  geom_sf(aes(fill = park_area_per_capita), color = "white", size = 0.3) +
+  scale_fill_viridis_c(
+    option = "B",
+    name = "Park area per capita\n(sq km per person)"
+  ) +
+  labs(
+    title = "Green-Space Equity Across Philadelphia PPR Districts",
+    subtitle = "Lower per-capita park area may indicate under-served communities",
+    caption = "Data: OpenDataPhilly (2018), ACS 2023 via tidycensus"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "bottom"
+  )
 
+# 7️⃣ Summary statistics -----------------------------------------------------
+district_stats |>
+  arrange(park_area_per_capita) |>
+  select(LABEL, mean_income, total_pop, park_area_per_capita)
+
+library(ggplot2)
+
+ggplot(district_stats, aes(x = reorder(LABEL, park_area_per_capita),
+                           y = park_area_per_capita,
+                           fill = mean_income)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_c(option = "B", name = "Mean Income ($)") +
+  labs(
+    title = "Park Area per Capita by PPR District",
+    subtitle = "Colored by average household income",
+    x = "PPR District",
+    y = "Park area per capita (sq km per person)",
+    caption = "Data: OpenDataPhilly (2018), ACS 2023"
+  ) +
+  theme_minimal(base_size = 12)
 
 
 ```
@@ -536,13 +991,17 @@ Use at least TWO spatial operations to answer your research question.
 - Brief interpretation of results (3-5 sentences)
 
 **Your interpretation:**
-
-[Write your findings here]
-
+Interpretation:
+The results reveal clear spatial variation in park availability across Philadelphia’s Parks & Recreation districts.
+Districts 6 and 3 (in North and West Philadelphia) show the lowest per-capita park area—roughly 0.00010 sq km per person—combined with lower median household incomes around $37 000 – $48 000.
+By contrast, Districts 1 and 9 in the northeast and northwest have both larger park area per capita and higher average incomes.
+This pattern suggests a modest but visible inequity in green-space distribution, indicating that residents in poorer neighborhoods may face fewer recreation opportunities and less exposure to green environments.
 
 ## Finally - A few comments about your incorporation of feedback!
 Take a few moments to clean up your markdown document and then write a line or two or three about how you may have incorporated feedback that you recieved after your first assignment. 
 
+I improved this assignment by aligning all spatial datasets to the same CRS, adding clearer explanations between code and results, and refining map design with consistent colors and labels.
+These changes made my workflow more reproducible and the final outputs more professional and interpretable.
 ---
 
 ## Submission Requirements

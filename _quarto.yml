@@ -22,16 +22,20 @@ website:
             text: "Week3"
           - href: weekly-notes/week-04-notes.qmd
             text: "Week4"
+          - href: weekly-notes/week-05-notes.qmd
+            text: "Week5"
       - text: "Labs"
         menu:
           - href: labs/lab_0/lab0_template.qmd
             text: "Lab 0: Dplyr Basics"
           - href: labs/lab_1/assignment1_template.qmd
             text: "Assignment 1: Census Data Exploration"
+          - href: labs/lab_2/assignment2_template.qmd
+            text: "Assignment 2: Spatial Analysis and Visualization"
       - text: "Assignments"
         menu:
-          - href: labs/lab_1/assignment1_template.qmd
-            text: "Assignment 1: Census Data Exploration"
+          - href: labs/lab_2/assignment2_template.qmd
+            text: "Assignment 2: Spatial Analysis and Visualization"
       
 format:
   html:
