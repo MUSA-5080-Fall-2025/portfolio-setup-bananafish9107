@@ -1,18 +1,26 @@
 ---
-title: "Week 2 Notes - Census Data"
-date: "2025-09-18"
+title: "Week 6 Notes - Spatial Machine Learning & Advanced Regression"
+date: "2025-10-18"
 ---
 
 ## Key Concepts Learned
-- Repository(repo): folders containing project files 
-- Commit: snapshot work at a point
-  Push: send changes to the Github cloud 
-  Pull: get the latest changes from the Github cloud
-- Quarto: Publishing system into professional documents
+- Expanding Your Toolkit：Categorical variables
+  Interactions
+  Polynomial terms
+- Why Space Matters：
+  Hedonic model framework
+  Tobler’s First Law
+  Spatial autocorrelation
+- Creating Spatial Features
+  Buffer aggregation
+  k-Nearest Neighbors
+  Distance to amenities
   
 ## Coding Techniques
-- Main Header
-
+- Converting to Spatial Data
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
+  st_transform('ESRI:102286')  # MA State Plane (feet)
+- 
 
 ## Questions & Challenges
 - 4. Why do some of my pages show as not existing on 404? 
@@ -21,28 +29,7 @@ date: "2025-09-18"
 
 - You always need to follow the YML file template. The red-highlighted part below is how the magic happens. Only having the folder and its files doesn't work. (Once again, after you make the change, you need to run quarto render to make sure it renders and then push to GitHub)
 
-- project:
--   type: website
--   output-dir: docs
 
-- website:
--   title: "Your name - MUSA 5080 Portfolio"
--   navbar:
--     left:
--       - href: index.qmd
--         text: Home
--       - text: Weekly Notes 
--         menu:
--           - href: weekly-notes/week-01-notes.qmd
--             text: Week 1
-- format:
--   html:
--     theme: cosmo
--     toc: true
--     code-fold: true
-
-- execute:
--   freeze: auto
 
 ## Connections to Policy
 - [How this week's content applies to real policy work]
