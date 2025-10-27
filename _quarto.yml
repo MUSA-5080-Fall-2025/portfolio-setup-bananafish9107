@@ -32,13 +32,14 @@ website:
             text: "Assignment 1: Census Data Exploration"
           - href: labs/lab_2/assignment2_template.qmd
             text: "Assignment 2: Spatial Analysis and Visualization"
-          - href: labs/lab_3/Midterm_2025_Slides.qmd
+          - href: labs/lab_3/Midterm_2025_Technical_Appendix.qmd
             text: "Assignment 3: Philadelphia Housing Model"
       - text: "Assignments"
         menu:
-          - href: labs/lab_3/Midterm_2025_Technical_Appendix.qmd
+          - href: labs/lab_3/Midterm_2025_Slides.qmd
             text: "Assignment 3: Philadelphia Housing Model"
-      
+          - href: labs/lab_3/Midterm_2025_Slides.html
+            text: "Assignment 3_slides: Philadelphia Housing Model"
 format:
   html:
     theme: cosmo
