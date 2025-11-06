@@ -5,7 +5,7 @@ author: "<em>Ming Cao, Mark Deng, Jun Luu, Josh Rigsby, Alex Stauffer, Tess Vu</
 format:
   revealjs:
     theme:
-      - weitzman_theme/weitzman.scss
+      - weitzman_theme/weitzman
     highlight-style: breeze
     slide-number: true
     smaller: true
