@@ -41,7 +41,7 @@ library(units)
 options(scipen = 999)
 ```
 
-```{r}
+```{r, include=FALSE}
 # Property data.
 properties_path <- "data/philly_properties.csv"
 properties <- read.csv(properties_path)
