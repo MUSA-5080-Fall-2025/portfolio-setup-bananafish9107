@@ -363,6 +363,37 @@ Both predictors are highly significant, consistent with theories of spatial clus
 #### Part 5: Spatial Cross-Validation (2017)
 - Implement Leave-One-Group-Out cross-validation on 2017 data
 - Calculate and report error metrics (MAE, RMSE)
+```{r}
+model_df_2017 <- model_df %>%
+  # 如果你的年份变量名不是 year，请改这里
+  filter(year == 2017) %>%
+  mutate(
+    dist_hotspot_km = as.numeric(dist_hotspot_m) / 1000
+  ) %>%
+  # 保留目标变量、预测变量 + 分组变量
+  dplyr::select(
+    count,
+    knn_lag_count,
+    dist_hotspot_km,
+    group_id   # 如果你的分组变量叫别的名，比如 grid_id，就改这里
+  ) %>%
+  mutate(
+    count           = as.numeric(count),
+    knn_lag_count   = as.numeric(knn_lag_count),
+    dist_hotspot_km = as.numeric(dist_hotspot_km)
+  ) %>%
+  # 删掉 NA / Inf，避免 glm 报错
+  filter(
+    if_all(
+      .cols = everything(),
+      .fns  = ~ !is.na(.) & is.finite(.)
+    )
+  )
+
+# 看一眼数据结构确认一下
+summary(model_df_2017)
+str(model_df_2017)
+```
 
 #### Part 6: Model Evaluation
 - Generate final predictions for both years
