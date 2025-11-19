@@ -365,24 +365,21 @@ Both predictors are highly significant, consistent with theories of spatial clus
 - Calculate and report error metrics (MAE, RMSE)
 ```{r}
 model_df_2017 <- model_df %>%
-  # 如果你的年份变量名不是 year，请改这里
   filter(year == 2017) %>%
   mutate(
     dist_hotspot_km = as.numeric(dist_hotspot_m) / 1000
   ) %>%
-  # 保留目标变量、预测变量 + 分组变量
   dplyr::select(
     count,
     knn_lag_count,
     dist_hotspot_km,
-    group_id   # 如果你的分组变量叫别的名，比如 grid_id，就改这里
+    group_id   
   ) %>%
   mutate(
     count           = as.numeric(count),
     knn_lag_count   = as.numeric(knn_lag_count),
     dist_hotspot_km = as.numeric(dist_hotspot_km)
   ) %>%
-  # 删掉 NA / Inf，避免 glm 报错
   filter(
     if_all(
       .cols = everything(),
@@ -390,7 +387,6 @@ model_df_2017 <- model_df %>%
     )
   )
 
-# 看一眼数据结构确认一下
 summary(model_df_2017)
 str(model_df_2017)
 ```
@@ -418,8 +414,16 @@ str(model_df_2017)
 **For each major section, you must explain in your own words:**
 
 - **What** you are doing in that step
+In this step, I cleaned the raw crime data and constructed the spatial variables needed for the model. I converted hotspot distances from meters to kilometers and created a KNN-lagged crime count that captures activity in the surrounding grid cells. I also filtered out missing and non-finite values to ensure the regression model could run without errors.
+I fit a Poisson regression model using crime counts as the dependent variable and two spatial predictors: KNN-lagged crime and distance to the nearest hotspot. The Poisson model is suitable because the outcome is a non-negative count.
+
 - **Why** this step is important for the analysis
+Preparing the data carefully is important because both Poisson regression and spatial cross-validation are sensitive to missing or inconsistent values. Spatial features such as KNN lags and distances allow the model to capture neighborhood-level effects, which are essential for understanding spatial clustering in crime.
+Hotspot models provide a way to quantify how local spatial context affects crime. A positive coefficient indicates places where crime is “pulled” upward by nearby activity, while a negative coefficient indicates places where crime declines as distance increases.
+
 - **What** you found or learned from the results
+The cleaned dataset contained 5,880 observations. Crime counts were heavily right-skewed, with many zero-crime cells but a few very high-crime ones, confirming that a count model such as Poisson is appropriate.
+The results show strong spatial clustering. The KNN lag variable had a positive and highly significant coefficient, meaning that crime in nearby cells increases expected crime in the focal cell. The distance variable had a negative coefficient, showing that crime decreases rapidly as distance from the hotspot increases. Together, these results confirm that both local neighbors and proximity to hotspots meaningfully shape crime intensity.
 
 Do not simply copy text from the example or from your AI friend. 
 Think about the purpose of each technique and articulate it in your own words.
