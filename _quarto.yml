@@ -1,6 +1,19 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - index.qmd
+    - about.qmd
+    - weekly-notes/week-01-notes.qmd
+    - weekly-notes/week-02-notes.qmd
+    - weekly-notes/week-03-notes.qmd
+    - weekly-notes/week-04-notes.qmd
+    - weekly-notes/week-05-notes.qmd
+    - labs/lab_0/lab0_template.qmd
+    - labs/lab_1/assignment1_template.qmd
+    - labs/lab_2/assignment2_template.qmd
+    - labs/lab_3/Midterm_2025_Slides.qmd
+    - labs/lab_5/Indego_SpaceTime_Prediction.Rmd
 
 website:
   title: "Yiming Cao - MUSA 5080 Portfolio"
@@ -32,12 +45,12 @@ website:
             text: "Assignment 1: Census Data Exploration"
           - href: labs/lab_2/assignment2_template.qmd
             text: "Assignment 2: Spatial Analysis and Visualization"
-          - href: labs/lab_3/Midterm_2025_Technical_Appendix.qmd
-            text: "Assignment 3: Philadelphia Housing Model_Appendix"
           - href: labs/lab_3/Midterm_2025_Slides.qmd
             text: "Assignment 3: Philadelphia Housing Model_Slides"
           - href: labs/lab_4/assignment4.qmd
             text: "Assignment 4: Spatial Predictive Analysis"
+          - href: labs/lab_5/Indego_SpaceTime_Prediction.Rmd
+            text: "Assignment 5: Space-Time Prediction"
       - text: "Assignments"
         menu:
           - href: labs/lab_3/Midterm_2025_Slides.qmd
@@ -46,6 +59,9 @@ website:
             text: "Assignment 3_slides: Philadelphia Housing Model"
           - href: labs/lab_4/assignment4.qmd
             text: "Assignment 4: Spatial Predictive Analysis"
+          - href: labs/lab_5/Indego_SpaceTime_Prediction.Rmd
+            text: "Assignment 5: Space-Time Prediction"
+
 format:
   html:
     theme: cosmo

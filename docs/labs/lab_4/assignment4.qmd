@@ -1,0 +1,497 @@
+---
+title: "Lab Assignment 4: Spatial Predictive Analysis"
+subtitle: "Spatial Predictive Analysis of Graffiti Removal"
+author: "Ming Cao"
+date: today
+format: 
+  html:
+    code-fold: false
+    toc: true
+    toc-location: left
+    theme: cosmo
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+## Assignment Overview
+
+In this lab, you will apply the spatial predictive modeling techniques demonstrated in the class exercise to a 311 service request type of your choice. You will build a complete spatial predictive model, document your process, and interpret your results.
+
+### Timeline & Deliverables
+
+**Due Date:** November 17, 2025, 10:00AM
+
+**Deliverable:** One rendered document, posted to your portfolio website.
+
+### Learning Goals
+
+By completing this assignment, you will demonstrate your ability to:
+
+- Adapt example code to analyze a new dataset
+- Build spatial features for predictive modeling
+- Apply count regression techniques to spatial data
+- Implement spatial cross-validation
+- Interpret and communicate model results
+- Critically evaluate model performance
+
+---
+
+## Step 1: Choose Your 311 Violation Type
+
+For this lab, I focus on **Graffiti Removal** service requests in the City of Chicago. Graffiti removal is a useful 311 category for spatial predictive analysis because:
+
+- It is a **high-volume** request type that occurs across many neighborhoods.
+- It reflects both **physical conditions** (e.g., walls, alleys, commercial corridors) and **social dynamics** (e.g., disorder, enforcement, community reporting).
+- The city has a clear operational interest in **prioritizing** where to send removal crews.
+
+Studying graffiti removal requests can help the city anticipate where new incidents are likely to appear, allocate service resources more efficiently, and evaluate whether certain neighborhoods are consistently underserved.
+
+In the rest of the analysis, I will use graffiti removal requests from **2017** as my main modeling dataset, and (optionally) use **2018** data for temporal validation.
+
+```{r load-graffiti}
+library(tidyverse)
+library(lubridate)
+
+graffiti <- read_csv("data/311_Service_Requests_-_Graffiti_Removal_-_Historical_20251115.csv")
+
+graffiti <- graffiti %>%
+  mutate(
+    creation_date = mdy(`Creation Date`)  
+  )
+
+graffiti_2017 <- graffiti %>%
+  mutate(year = year(creation_date)) %>%
+  filter(year == 2017)
+
+nrow(graffiti_2017)
+```
+
+---
+
+## Step 2: Complete the Analysis
+
+Using the class exercise as your template, adapt the code to analyze your chosen 311 violation type.
+
+### What to Include
+
+Work through all major sections of the analysis:
+
+#### Part 1: Data Loading & Exploration
+In this part, I load the Chicago boundary file and turn the 2017 graffiti removal records into spatial points so I can see where they are located.
+
+```{r}
+
+### 2.1 Load Chicago community areas
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(spdep)
+library(spatialreg)
+library(MASS)
+
+chicago_areas <- st_read("data/chicago_community_areas.shp")
+```
+
+```{r to-sf}
+graffiti_sf <- graffiti_2017 %>%
+  filter(!is.na(Longitude), !is.na(Latitude)) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"),
+           crs = 4326,
+           remove = FALSE)
+
+```
+
+```{r fix-crs}
+st_crs(chicago_areas)
+st_crs(graffiti_sf)
+
+if (is.na(st_crs(chicago_areas))) {
+  chicago_areas <- st_set_crs(chicago_areas, 4326)
+}
+
+if (is.na(st_crs(graffiti_sf))) {
+  graffiti_sf <- st_set_crs(graffiti_sf, 4326)
+}
+
+st_crs(chicago_areas)
+st_crs(graffiti_sf)
+
+chicago_areas_proj <- st_transform(chicago_areas, 26971)
+graffiti_proj      <- st_transform(graffiti_sf, 26971)
+```
+
+
+
+#### Part 2: Fishnet Grid Creation
+- Create a 500m x 500m fishnet grid
+- Aggregate your violations to grid cells
+- Visualize the count distribution
+```{r part2_fishnet}
+fishnet <- st_make_grid(
+  chicago_areas_proj,
+  cellsize = 500,
+  square   = TRUE
+)
+
+fishnet <- st_sf(
+  id       = seq_along(fishnet),
+  geometry = fishnet
+)
+```
+
+```{r part2_counts}
+idx    <- st_intersects(fishnet, graffiti_proj)
+counts <- lengths(idx)
+
+fishnet_counts <- st_sf(
+  id       = seq_along(fishnet),
+  count    = counts,
+  geometry = fishnet$geometry
+)
+```
+
+```{r part2_plot_fishnet}
+library(ggplot2)
+
+ggplot() +
+  geom_sf(data = fishnet_counts, aes(fill = count), color = NA) +
+  geom_sf(data = chicago_areas_proj, fill = NA, color = "white", size = 0.2) +
+  labs(
+    title = "Graffiti Removal Counts per 500m Grid (2017)",
+    subtitle = "City of Chicago"
+  ) +
+  scale_fill_viridis_c(option = "magma") +
+  theme_minimal()
+```
+
+
+#### Part 3: Spatial Features
+- Calculate k-nearest neighbor features
+- Perform Local Moran's I analysis
+- Identify hot spots and cold spots
+- Create distance-to-hotspot measures
+- Join any additional contextual data if you are looking for more to do and really get into this (e.g., demographics, land use)
+```{r part3_centroids}
+grid_centroids <- st_centroid(fishnet_counts)
+
+coords <- st_coordinates(grid_centroids)
+```
+
+```{r part3_knn}
+knn_nb  <- knearneigh(coords, k = 8)
+nb      <- knn2nb(knn_nb)
+
+lw <- nb2listw(nb, style = "W", zero.policy = TRUE)
+
+fishnet_features <- fishnet_counts %>%
+  mutate(
+    knn_lag_count = lag.listw(lw, count, zero.policy = TRUE)
+  )
+```
+
+```{r part3_local_moran_fixed2}
+
+localI    <- localmoran(fishnet_features$count, lw, zero.policy = TRUE)
+localI_df <- as.data.frame(localI)
+
+print(names(localI_df))
+
+fishnet_features$Ii      <- localI_df[, 1]
+fishnet_features$Z_Ii    <- localI_df[, "Z.Ii"]
+fishnet_features$local_p <- localI_df[, ncol(localI_df)]  
+
+mean_count <- mean(fishnet_features$count)
+
+fishnet_features <- fishnet_features %>%
+  mutate(
+    cluster_type = case_when(
+      count >= mean_count & Ii > 0 & local_p < 0.05 ~ "High-High",
+      count <  mean_count & Ii > 0 & local_p < 0.05 ~ "Low-Low",
+      count >= mean_count & Ii < 0 & local_p < 0.05 ~ "High-Low",
+      count <  mean_count & Ii < 0 & local_p < 0.05 ~ "Low-High",
+      TRUE                                          ~ "Not significant"
+    )
+  )
+
+```
+```{r part3_plot_clusters_fixed}
+ggplot() +
+  geom_sf(data = fishnet_features, aes(fill = cluster_type), color = NA) +
+  geom_sf(data = chicago_areas_proj, fill = NA, color = "white", size = 0.2) +
+  scale_fill_manual(
+    values = c(
+      "High-High"       = "red",
+      "Low-Low"         = "blue",
+      "High-Low"        = "orange",
+      "Low-High"        = "lightblue",
+      "Not significant" = "grey85"
+    )
+  ) +
+  labs(
+    title = "Local Moran's I Clusters for Graffiti Grid Counts"
+  ) +
+  theme_minimal()
+```
+```{r part3_hotspot_dist_fixed}
+hotspots <- fishnet_features %>%
+  filter(cluster_type == "High-High")
+
+if(nrow(hotspots) > 0){
+  hotspot_centroids <- st_centroid(hotspots)
+  all_centroids     <- st_centroid(fishnet_features)
+
+  dist_matrix <- st_distance(all_centroids, hotspot_centroids)
+  fishnet_features$dist_hotspot_m <- apply(dist_matrix, 1, min)
+} else {
+  fishnet_features$dist_hotspot_m <- NA_real_
+}
+```
+
+#### Part 4: Count Regression Models
+- Fit Poisson regression
+- Fit Negative Binomial regression
+- Compare model fit (AIC)
+```{r}
+model_df <- fishnet_features |>
+  st_drop_geometry() |>
+  mutate(
+    dist_hotspot_km = as.numeric(dist_hotspot_m) / 1000
+  ) |>
+  filter(
+    !is.na(count),
+    !is.na(knn_lag_count),
+    !is.na(dist_hotspot_km)
+  )
+```
+
+```{r part4_poisson}
+pois_model <- glm(
+  count ~ knn_lag_count + dist_hotspot_km,
+  family = "poisson",
+  data   = model_df
+)
+
+summary(pois_model)
+pois_aic <- AIC(pois_model)
+pois_aic
+```
+```{r part4_nb}
+
+model_df_clean <- model_df %>%
+  mutate(
+    dist_hotspot_km = as.numeric(dist_hotspot_m) / 1000
+  ) %>%
+  dplyr::select(
+    count,
+    knn_lag_count,
+    dist_hotspot_km
+  ) %>%
+
+  mutate(
+    count          = as.numeric(count),
+    knn_lag_count  = as.numeric(knn_lag_count),
+    dist_hotspot_km = as.numeric(dist_hotspot_km)
+  ) %>%
+
+  filter(
+    if_all(
+      .cols = everything(),
+      .fns  = ~ !is.na(.) & is.finite(.)
+    )
+  )
+
+summary(model_df_clean)
+str(model_df_clean)
+
+glm_fit <- glm(
+  count ~ knn_lag_count + dist_hotspot_km,
+  data   = model_df_clean,
+  family = poisson(link = "log")
+)
+
+summary(glm_fit)
+
+coef_table <- broom::tidy(glm_fit)
+coef_table
+
+```
+1. Lagged crime (knn_lag_count)
+
+Coefficient: 0.00749
+
+p-value: < 0.001
+
+Interpretation:
+For each additional crime in nearby cells (KNN lag), the expected crime count in the focal cell increases by about 0.75%
+(because exp(0.00749) ≈ 1.0075).
+This confirms strong spatial clustering: crime tends to occur near other crime.
+
+2. Distance to hotspot (dist_hotspot_km)
+
+Coefficient: –0.491
+
+p-value: < 0.001
+
+Interpretation:
+For each additional kilometer of distance from the hotspot, expected crime counts decrease by 38.9%
+(exp(–0.491) ≈ 0.611).
+The farther from the hotspot, the fewer crimes—this is the expected spatial decay effect.
+
+3. Model Fit
+
+Null deviance: 455,129
+
+Residual deviance: 97,789
+
+This represents a major improvement (large drop), meaning the predictors explain a large share of spatial variation in crime intensity.
+
+AIC = 106,700, which is reasonable for a grid cell Poisson model of 5,880 observations.
+
+4. Overall conclusion
+
+The model clearly shows:
+
+Local crime density strongly predicts crime count (positive and significant).
+
+Distance from hotspot strongly reduces crime (negative and significant).
+
+Both predictors are highly significant, consistent with theories of spatial clustering.
+
+#### Part 5: Spatial Cross-Validation (2017)
+- Implement Leave-One-Group-Out cross-validation on 2017 data
+- Calculate and report error metrics (MAE, RMSE)
+```{r}
+model_df_2017 <- model_df %>%
+  filter(year == 2017) %>%
+  mutate(
+    dist_hotspot_km = as.numeric(dist_hotspot_m) / 1000
+  ) %>%
+  dplyr::select(
+    count,
+    knn_lag_count,
+    dist_hotspot_km,
+    group_id   
+  ) %>%
+  mutate(
+    count           = as.numeric(count),
+    knn_lag_count   = as.numeric(knn_lag_count),
+    dist_hotspot_km = as.numeric(dist_hotspot_km)
+  ) %>%
+  filter(
+    if_all(
+      .cols = everything(),
+      .fns  = ~ !is.na(.) & is.finite(.)
+    )
+  )
+
+summary(model_df_2017)
+str(model_df_2017)
+```
+
+#### Part 6: Model Evaluation
+- Generate final predictions for both years
+- Compare to KDE baseline
+- Map prediction errors for 2018
+- Assess model performance across time
+
+#### CHALLENGE TASK: Temporal Validation (2018) *not mandatory, only if you want very strong spatial analytics muscles*
+- Download 2018 crimes https://data.cityofchicago.org/Public-Safety/Crimes-2018/3i3m-jwuy/about_data
+- Be sure to filter for BURGLARIES (FORCED ENTRY only to match the 2017 data)
+- Aggregate 2018 violations to the same fishnet grid
+- Use your 2017 model to predict 2018 counts
+- Calculate temporal validation metrics
+- Compare spatial vs. temporal validation performance
+
+---
+
+## Step 3: Write Your Analysis
+
+### Critical Requirement: Explain Each Step
+
+**For each major section, you must explain in your own words:**
+
+- **What** you are doing in that step
+In this step, I cleaned the raw crime data and constructed the spatial variables needed for the model. I converted hotspot distances from meters to kilometers and created a KNN-lagged crime count that captures activity in the surrounding grid cells. I also filtered out missing and non-finite values to ensure the regression model could run without errors.
+I fit a Poisson regression model using crime counts as the dependent variable and two spatial predictors: KNN-lagged crime and distance to the nearest hotspot. The Poisson model is suitable because the outcome is a non-negative count.
+
+- **Why** this step is important for the analysis
+Preparing the data carefully is important because both Poisson regression and spatial cross-validation are sensitive to missing or inconsistent values. Spatial features such as KNN lags and distances allow the model to capture neighborhood-level effects, which are essential for understanding spatial clustering in crime.
+Hotspot models provide a way to quantify how local spatial context affects crime. A positive coefficient indicates places where crime is “pulled” upward by nearby activity, while a negative coefficient indicates places where crime declines as distance increases.
+
+- **What** you found or learned from the results
+The cleaned dataset contained 5,880 observations. Crime counts were heavily right-skewed, with many zero-crime cells but a few very high-crime ones, confirming that a count model such as Poisson is appropriate.
+The results show strong spatial clustering. The KNN lag variable had a positive and highly significant coefficient, meaning that crime in nearby cells increases expected crime in the focal cell. The distance variable had a negative coefficient, showing that crime decreases rapidly as distance from the hotspot increases. Together, these results confirm that both local neighbors and proximity to hotspots meaningfully shape crime intensity.
+
+Do not simply copy text from the example or from your AI friend. 
+Think about the purpose of each technique and articulate it in your own words.
+
+---
+
+## Step 4: Format Your Document
+
+### Formatting Requirements
+
+Your knitted HTML document should be **professional and easy to read**:
+
+#### ✓ Clean Code
+- Remove unnecessary code, comments, or debugging lines
+- Keep only essential code chunks
+- Use `code-fold: show` in your YAML header
+
+#### ✓ Clear Structure
+- Use headers to organize sections
+- Include a table of contents
+- Add your name and date
+
+#### ✓ Readable Text
+- Ensure all text renders properly (no broken markdown)
+- Check that headers appear as headers (not plain text)
+- Use proper markdown formatting
+
+#### ✓ Quality Visualizations
+- All plots should have titles and labels
+- Maps should be readable
+- Use consistent color schemes
+
+#### ✓ Professional Presentation
+- Proofread for typos
+- Remove any "Your answer here" placeholders
+- Make sure all code runs without errors
+- Make IT NEAT. WE GOTTA LOOK GOOD HERE.
+
+---
+
+## Submission Checklist
+
+Before you submit, verify that your document includes:
+
+### Required Components
+
+- [ ] **Introduction**: Brief description of your chosen 311 violation type and why you selected it
+- [ ] **Data Exploration**: Maps and summary statistics of your violation data
+- [ ] **Fishnet Grid**: Successfully created and visualized grid with aggregated counts
+- [ ] **Spatial Features**: At least 2-3 spatial features calculated (k-NN, distance measures, etc.)
+- [ ] **Local Moran's I**: Spatial autocorrelation analysis with interpretation
+- [ ] **Count Regression**: Both Poisson and Negative Binomial models with comparison
+- [ ] **Spatial Cross-Validation**: LOGO CV implemented on 2017 data with reported metrics
+- [ ] **Temporal Validation**: 2018 data aggregated and tested with 2017 model(OPTIONAL.)
+- [ ] **Validation Comparison**: Comparison of spatial vs. temporal validation performance
+- [ ] **Model Comparison**: Your model vs. KDE baseline for 2018 predictions
+- [ ] **Error Analysis**: Maps and discussion of where model performs well/poorly
+- [ ] **Written Explanations**: Your own words explaining each step
+
+
+### Technical Requirements
+
+- [ ] Document knits to HTML without errors
+- [ ] Code is clean and well-organized
+- [ ] All visualizations display properly
+- [ ] Headers and formatting render correctly
+- [ ] File is named successfully posted to your website
+
+---
+
+
